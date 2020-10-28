@@ -1,6 +1,7 @@
 {
-  "short_name": "Som v rade",
+  "lang": "sk",
   "name": "Som v rade",
+  "description": "Pomáhajme si navzájom počas plošného testovania.",
   "icons": [
     {
       "src": "favicon.ico",
@@ -20,6 +21,6 @@
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#000000",
+  "theme_color": "#0097a7",
   "background_color": "#ffffff"
 }
