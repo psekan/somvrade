@@ -1,3 +1,20 @@
 {
-  "data": [{ "id": "1", "county": "test", "city": "test", "district": "test", "place": "test" }]
+  "data": [
+    {
+      "id": "1",
+      "county": "test",
+      "city": "test",
+      "district": "test",
+      "place": "test",
+      "active": false
+    },
+    {
+      "id": "2",
+      "county": "test 2",
+      "city": "test 2",
+      "district": "test 2",
+      "place": "test 2",
+      "active": true
+    }
+  ]
 }

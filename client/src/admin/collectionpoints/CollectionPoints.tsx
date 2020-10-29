@@ -16,6 +16,8 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import DeleteIcon from '@material-ui/icons/Delete';
 import AcceptIcon from '@material-ui/icons/Check';
+import EditIcon from '@material-ui/icons/Edit';
+import { EditDialog } from './EditDialog';
 import {
   useCollectionPoints,
   CollectionPointEntity,
@@ -37,29 +39,47 @@ const useStyles = makeStyles({
 export function CollectionPoints() {
   const classes = useStyles();
   const [session] = useSession();
+  const [editingEntity, setEditingEntity] = useState<CollectionPointEntity>();
   const { isLoading, response, error, refresh } = useCollectionPoints();
 
   return (
-    <TableContainer component={Paper}>
-      {isLoading && <LinearProgress />}
-      {error && <Alert severity={'error'}>{JSON.stringify(error)}</Alert>}
-      <Table className={classes.table}>
-        <TableHead>
-          <TableRow>
-            <TableCell>Nazov odberneho miesta</TableCell>
-            <TableCell>Okres</TableCell>
-            <TableCell>Mesto</TableCell>
-            <TableCell>Okrsok</TableCell>
-            <TableCell align="right">Moznosti</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {(response?.data || []).map(row => (
-            <Row entity={row} session={session} onActionDone={refresh} />
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+    <>
+      <TableContainer component={Paper}>
+        {isLoading && <LinearProgress />}
+        {error && <Alert severity={'error'}>{JSON.stringify(error)}</Alert>}
+        <Table className={classes.table}>
+          <TableHead>
+            <TableRow>
+              <TableCell>Názov odbérneho miesta</TableCell>
+              <TableCell>Okres</TableCell>
+              <TableCell>Mesto/Obec</TableCell>
+              <TableCell>Okrsok</TableCell>
+              <TableCell>Status</TableCell>
+              <TableCell align="right">Možnosti</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {(response?.data || []).map(row => (
+              <Row
+                key={row.id}
+                entity={row}
+                session={session}
+                onActionDone={refresh}
+                handleEdit={entity => setEditingEntity(entity)}
+              />
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <EditDialog
+        entity={editingEntity}
+        onCancel={() => setEditingEntity(undefined)}
+        onConfirm={() => {
+          setEditingEntity(undefined);
+          refresh();
+        }}
+      />
+    </>
   );
 }
 
@@ -67,10 +87,12 @@ function Row({
   entity,
   session,
   onActionDone,
+  handleEdit,
 }: {
   entity: CollectionPointEntity;
   session: Session;
   onActionDone: () => void;
+  handleEdit: (entity: CollectionPointEntity) => void;
 }) {
   const classes = useStyles();
   const [actionLoading, setActionLoading] = useState(false);
@@ -109,13 +131,25 @@ function Row({
       <TableCell component="th" scope="row">
         {entity.district}
       </TableCell>
+      <TableCell component="th" scope="row">
+        {entity.active ? 'Aktívne' : 'Neaktívne'}
+      </TableCell>
       <TableCell component="th" scope="row" align="right">
         {actionLoading && <CircularProgress size={25} />}
         {!actionLoading && (
           <div className={classes.rowActions}>
             <IconButton
               color={'primary'}
-              title={'Akceptuj'}
+              title={'Edituj'}
+              size={'small'}
+              onClick={() => handleEdit(entity)}
+            >
+              <EditIcon />
+            </IconButton>
+            <Divider orientation="vertical" flexItem />
+            <IconButton
+              color={'primary'}
+              title={'Aktivuj'}
               size={'small'}
               onClick={() => handleApprove(entity)}
             >
@@ -124,7 +158,7 @@ function Row({
             <Divider orientation="vertical" flexItem />
             <IconButton
               color={'secondary'}
-              title={'Vymaz'}
+              title={'Vymaž'}
               size={'small'}
               onClick={() => handleDelete(entity)}
             >
