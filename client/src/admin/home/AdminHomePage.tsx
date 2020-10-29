@@ -16,7 +16,7 @@ import { CollectionPoints } from '../collectionpoints';
 const useStyles = makeStyles({
   container: {
     marginTop: 80,
-    padding: 20,
+    padding: 0,
     display: 'flex',
     flexDirection: 'column',
   },

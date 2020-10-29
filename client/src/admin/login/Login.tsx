@@ -3,6 +3,7 @@ import { TextField, Button, makeStyles, Typography } from '@material-ui/core';
 import Snackbar from '@material-ui/core/Snackbar';
 import Alert from '@material-ui/lab/Alert';
 import Paper from '@material-ui/core/Paper';
+import LinearProgress from '@material-ui/core/LinearProgress';
 import { useSession } from '../../Session';
 import { login } from '../../services';
 
@@ -29,6 +30,7 @@ const useStyles = makeStyles({
 export function LoginPage() {
   const [, sessionActions] = useSession();
   const [errorMessage, setErrorMessage] = useState('');
+  const [isLoginLoading, setLoginLoading] = useState(false);
   const classes = useStyles();
 
   async function handleSubmit(evt: FormEvent) {
@@ -41,6 +43,7 @@ export function LoginPage() {
       if (!username || !password) {
         throw new Error('username and password required');
       }
+      setLoginLoading(true);
       const resp = await login(form.username.value, form.password.value);
       sessionActions.initSecureSession({
         accessToken: resp.access_token,
@@ -49,6 +52,7 @@ export function LoginPage() {
       });
     } catch {
       setErrorMessage('Prihlasenie neuspesne.');
+      setLoginLoading(false);
     }
   }
 
@@ -62,9 +66,10 @@ export function LoginPage() {
       <form onSubmit={handleSubmit} className={classes.form}>
         <TextField name={'username'} placeholder={'Pouzivatelske meno'} />
         <TextField name={'password'} type={'password'} placeholder={'Heslo'} />
-        <Button type={'submit'} variant={'contained'} color={'primary'}>
+        <Button type={'submit'} variant={'contained'} color={'primary'} disabled={isLoginLoading}>
           Prihlas sa
         </Button>
+        {isLoginLoading && <LinearProgress />}
       </form>
       <Snackbar
         open={!!errorMessage}

@@ -11,7 +11,7 @@ const initialActions: SessionContextActions = {
   destroySession: () => null,
 };
 
-interface Session {
+export interface Session {
   isLoggedIn: boolean;
   token?: Token;
 }
