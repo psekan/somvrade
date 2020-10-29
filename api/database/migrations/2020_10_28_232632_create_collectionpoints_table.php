@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePlacesTable extends Migration
+class CreateCollectionPointsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreatePlacesTable extends Migration
      */
     public function up()
     {
-        Schema::create('places', function (Blueprint $table) {
+        Schema::create('collection_point', function (Blueprint $table) {
             $table->id();
             $table->string('county', 60)->index('county');
             $table->string('city', 60)->index('city');

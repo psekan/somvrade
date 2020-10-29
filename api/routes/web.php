@@ -18,6 +18,6 @@ $router->get('/', function () use ($router) {
 });
 
 $router->group(['prefix' => 'api'], function () use ($router) {
-    $router->get('places',  ['uses' => 'PlaceController@showAll']);
-    $router->post('places', ['uses' => 'PlaceController@create']);
+    $router->get('collectionpoints',  ['uses' => 'CollectionPointsController@showAll']);
+    $router->post('collectionpoints', ['uses' => 'CollectionPointsController@create']);
 });
