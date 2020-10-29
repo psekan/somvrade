@@ -13,12 +13,13 @@ class CreateCollectionPointsTable extends Migration
      */
     public function up()
     {
-        Schema::create('collection_point', function (Blueprint $table) {
+        Schema::create('collection_points', function (Blueprint $table) {
             $table->id();
             $table->string('county', 60)->index('county');
             $table->string('city', 60)->index('city');
             $table->string('district', 60)->index('district');
             $table->string('place', 250)->index('place');
+            $table->boolean('active')->default(false)->index('active');
             $table->timestamps();
         });
     }
@@ -30,6 +31,6 @@ class CreateCollectionPointsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('places');
+        Schema::dropIfExists('collection_points');
     }
 }

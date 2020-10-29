@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\CollectionPoint;
+use App\Models\CollectionPoints;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Cache\Repository as Cache;
 
@@ -22,8 +22,18 @@ class CollectionPointsController extends Controller
 
     public function showAll()
     {
+        if (auth()->check()) {
+            return response()->json(CollectionPoints::query()
+                ->orderBy('county')
+                ->orderBy('city')
+                ->orderBy('district')
+                ->orderBy('place')
+                ->get());
+        }
+
         if (!$this->cache->has(self::CACHE_KEY)) {
-            $places = CollectionPoint::query()
+            $places = CollectionPoints::query()
+                ->where('active', true)
                 ->orderBy('county')
                 ->orderBy('city')
                 ->orderBy('district')
@@ -39,8 +49,28 @@ class CollectionPointsController extends Controller
 
     public function create(Request $request)
     {
-        $Place = CollectionPoint::query()->create($request->all());
+        $Place = CollectionPoints::query()->create($request->all());
         $this->cache->delete(self::CACHE_KEY);
         return response()->json($Place, 201);
+    }
+
+    public function showOne($id)
+    {
+        return response()->json(CollectionPoints::query()->findOrFail($id));
+    }
+
+    public function update($id, Request $request)
+    {
+        $author = CollectionPoints::query()->findOrFail($id);
+        $author->update($request->all());
+        $this->cache->delete(self::CACHE_KEY);
+        return response()->json($author, 200);
+    }
+
+    public function delete($id)
+    {
+        CollectionPoints::query()->findOrFail($id)->delete();
+        $this->cache->delete(self::CACHE_KEY);
+        return response('Deleted Successfully', 200);
     }
 }

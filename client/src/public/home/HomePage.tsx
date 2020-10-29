@@ -20,7 +20,7 @@ export function HomePage() {
   const [placesError, setPlacesError] = React.useState<string | null>(null);
 
   const refreshPlaces = () => {
-    fetch('/api/places')
+    fetch('/api/collectionpoints')
       .then(res => res.json())
       .then(
         result => {

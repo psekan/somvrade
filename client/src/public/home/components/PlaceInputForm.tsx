@@ -81,7 +81,7 @@ export default function PlaceInputForm(props: PlaceInputFormProps) {
               variant="contained"
               color="primary"
               onClick={() => {
-                fetch('/api/places', {
+                fetch('/api/collectionpoints', {
                   method: 'POST',
                   headers: {
                     'Content-Type': 'application/json',
