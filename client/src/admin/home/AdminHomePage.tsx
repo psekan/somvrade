@@ -46,17 +46,17 @@ export function AdminHomePage() {
       <AppBar>
         <Toolbar>
           <Typography variant="h6" className={classes.title}>
-            Administracia
+            Administrácia
           </Typography>
           <Button onClick={() => sessionActions.destroySession()} color="inherit">
-            Odhlas ma
+            Ohlásenie
           </Button>
         </Toolbar>
       </AppBar>
       <Paper className={classes.container}>
         <AppBar position="static">
           <Tabs variant={'fullWidth'} value={value} onChange={handleChange}>
-            <Tab label={'Odberne miesta'} />
+            <Tab label={'Odberné miesta'} />
           </Tabs>
         </AppBar>
         <TabPanel value={value} index={0}>

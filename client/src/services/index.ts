@@ -28,6 +28,7 @@ export interface CollectionPointEntity {
   city: string;
   district: string;
   place: string;
+  active: boolean;
 }
 
 export function useCollectionPoints() {
@@ -46,6 +47,17 @@ export async function deleteCollectionPoint(id: string, session: Session): Promi
 export async function approveCollectionPoint(id: string, session: Session): Promise<LoginResponse> {
   return fetchJson('/mock/removeApprovePoint.json', {
     method: 'GET', // FIXME PUT
+    ...withSessionHeaders(session),
+  });
+}
+
+export async function updateCollectionPoint(
+  entity: CollectionPointEntity,
+  session: Session,
+): Promise<LoginResponse> {
+  return fetchJson('/api/collectionpoints', {
+    method: 'PUT',
+    body: JSON.stringify(entity),
     ...withSessionHeaders(session),
   });
 }

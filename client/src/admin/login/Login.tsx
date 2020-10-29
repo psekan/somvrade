@@ -51,7 +51,7 @@ export function LoginPage() {
         expiresIn: resp.expires_in,
       });
     } catch {
-      setErrorMessage('Prihlasenie neuspesne.');
+      setErrorMessage('Prihlásenie neúspešné.');
       setLoginLoading(false);
     }
   }
@@ -62,12 +62,12 @@ export function LoginPage() {
 
   return (
     <Paper className={classes.container}>
-      <Typography variant={'h4'}>Prihlasenie</Typography>
+      <Typography variant={'h4'}>Prihlásenie</Typography>
       <form onSubmit={handleSubmit} className={classes.form}>
-        <TextField name={'username'} placeholder={'Pouzivatelske meno'} />
-        <TextField name={'password'} type={'password'} placeholder={'Heslo'} />
+        <TextField name={'username'} label={'Používateľské meno'} variant={'outlined'} />
+        <TextField name={'password'} type={'password'} label={'Heslo'} variant={'outlined'} />
         <Button type={'submit'} variant={'contained'} color={'primary'} disabled={isLoginLoading}>
-          Prihlas sa
+          Prihlás sa
         </Button>
         {isLoginLoading && <LinearProgress />}
       </form>
