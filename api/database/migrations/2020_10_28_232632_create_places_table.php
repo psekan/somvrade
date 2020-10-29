@@ -15,9 +15,10 @@ class CreatePlacesTable extends Migration
     {
         Schema::create('places', function (Blueprint $table) {
             $table->id();
-            $table->string('village');
-            $table->string('district');
-            $table->string('place');
+            $table->string('county', 60)->index('county');
+            $table->string('city', 60)->index('city');
+            $table->string('district', 60)->index('district');
+            $table->string('place', 250)->index('place');
             $table->timestamps();
         });
     }
