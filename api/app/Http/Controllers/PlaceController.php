@@ -10,7 +10,11 @@ class PlaceController extends Controller
 
     public function showAll()
     {
-        return response()->json(Place::all());
+        return response()->json(Place::query()
+            ->orderBy('village')
+            ->orderBy('district')
+            ->orderBy('place')
+            ->get());
     }
 
     public function create(Request $request)

@@ -44,9 +44,10 @@ function App() {
         </Typography>
         <Typography variant="body1" gutterBottom>
           Už túto sobotu a nedeľu sa postavíme do radu ku odberovým miestam.
-          Aby sme spoločne obmedzili počet ľudí, ktorí čakajú súčasne na test, možno v zime,
-          daždi a niekoľko desiatok minút až hodín, informujme sa, koľko ľudí aktuálne čaká pred odberovým miestom.
-          Čas, ktorý by sme strávili vonku v skupine ľudí čakaním, budeme môcť stráviť v pohodlí domova.
+          Aby sme spoločne obmedzili počet ľudí čakajúcich zároveň, informujme sa,
+          koľko ľudí aktuálne čaká pred odberovým miestom.
+          Čas, ktorý by sme strávili vonku v skupine ľudí čakaním
+          možno v nepriaznivom počasí, budeme môcť stráviť v pohodlí domova.
         </Typography>
 
         <Typography variant="h5" gutterBottom className={classes.header}>
@@ -62,7 +63,7 @@ function App() {
           Ako bude stránka fungovať?
         </Typography>
         <Typography variant="body1" gutterBottom>
-          Momentálne je stránka vo vývoji, informácie o samotnom vývoji získate nižšie. Princíp fungovania stránka bude ale nasledovný:
+          Momentálne je stránka vo vývoji, informácie o samotnom vývoji získate nižšie. Princíp fungovania stránky bude ale nasledovný:
         </Typography>
         <Typography variant="h6" gutterBottom className={classes.header}>
           Pred testovaním
