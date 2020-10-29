@@ -8,26 +8,27 @@ import { PlacesContext } from './PlacesContext';
 export default function PlaceSelector() {
   return (
     <PlacesContext.Consumer>
-      {({places, error}) => (
+      {({ places, error }) => (
         <>
           {error != null && (
             <Typography variant="overline" display="block" gutterBottom>
-              <b>{error}</b>
+              <b>{JSON.stringify(error)}</b>
             </Typography>
           )}
           <Autocomplete
             options={places}
-            groupBy={(option) => option.village}
+            groupBy={option => option.city}
             getOptionLabel={getPlaceLabelPlain}
             renderOption={getPlaceLabel}
             disabled={error != null}
-            style={{ width: "100%" }}
-            noOptionsText={(
+            style={{ width: '100%' }}
+            noOptionsText={
               <div>
-                Odberné miesto nebolo nájdené, môžete <Link href="#pridat-odberne-miesto">ho pridať</Link>.
+                Odberné miesto nebolo nájdené, môžete{' '}
+                <Link href="#pridat-odberne-miesto">ho pridať</Link>.
               </div>
-            )}
-            renderInput={(params) => (
+            }
+            renderInput={params => (
               <TextField
                 {...params}
                 label="Odberové miesto"
@@ -48,11 +49,16 @@ export default function PlaceSelector() {
 function getPlaceLabel(place: PlaceType) {
   return (
     <div>
-      <b>{place.village}</b>, {place.district}, <i>{place.place}</i>
+      <b>
+        {place.county === undefined ? '-' : place.county}, {place.city}
+      </b>
+      , {place.district}, <i>{place.place}</i>
     </div>
   );
 }
 
 function getPlaceLabelPlain(place: PlaceType) {
-  return `${place.village}, ${place.district}, ${place.place}`;
+  return `${place.county === undefined ? '-' : place.county}, ${place.city}, ${place.district}, ${
+    place.place
+  }`;
 }

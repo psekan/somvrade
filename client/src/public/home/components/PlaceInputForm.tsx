@@ -22,7 +22,8 @@ type PlaceInputFormProps = {
 
 export default function PlaceInputForm(props: PlaceInputFormProps) {
   const classes = useStyles();
-  const [village, setVillage] = React.useState<string|null>(null);
+  const [county, setCounty] = React.useState<string|null>(null);
+  const [city, setCity] = React.useState<string|null>(null);
   const [district, setDistrict] = React.useState<string|null>(null);
   const [place, setPlace] = React.useState<string|null>(null);
   const [formState, setFormState] = React.useState<formStateType>(formStateType.Input);
@@ -31,18 +32,29 @@ export default function PlaceInputForm(props: PlaceInputFormProps) {
     <Grid container justify="center" spacing={2}>
       {(formState === formStateType.Input || formState === formStateType.Error) && (
         <>
-          <Grid item xs={12} md={4}>
+          <Grid item xs={12} md={3}>
+            <TextField
+              label="Názov okresu"
+              variant="outlined"
+              className={classes.inputs}
+              value={county}
+              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                setCounty(event.target.value);
+              }}
+            />
+          </Grid>
+          <Grid item xs={12} md={3}>
             <TextField
               label="Názov obce/mesta"
               variant="outlined"
               className={classes.inputs}
-              value={village}
+              value={city}
               onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                setVillage(event.target.value);
+                setCity(event.target.value);
               }}
             />
           </Grid>
-          <Grid item xs={12} md={4}>
+          <Grid item xs={12} md={3}>
             <TextField
               label="Časť obce/mesta"
               variant="outlined"
@@ -53,7 +65,7 @@ export default function PlaceInputForm(props: PlaceInputFormProps) {
               }}
             />
           </Grid>
-          <Grid item xs={12} md={4}>
+          <Grid item xs={12} md={3}>
             <TextField
               label="Názov odberného miesta"
               variant="outlined"
@@ -70,12 +82,13 @@ export default function PlaceInputForm(props: PlaceInputFormProps) {
               color="primary"
               onClick={() => {
                 fetch('/api/places', {
-                  method: 'POST', // or 'PUT'
+                  method: 'POST',
                   headers: {
                     'Content-Type': 'application/json',
                   },
                   body: JSON.stringify({
-                    village,
+                    county,
+                    city,
                     district,
                     place
                   }),
