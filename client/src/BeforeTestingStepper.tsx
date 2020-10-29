@@ -6,7 +6,7 @@ import StepLabel from '@material-ui/core/StepLabel';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import PlaceSelector from "./PlaceSelector";
-import {Grid, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from "@material-ui/core";
+import {Grid, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Link} from "@material-ui/core";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -126,7 +126,7 @@ export default function BeforeTestingStepper() {
                 cesta k nemu trvať.
               </Typography>
               <Typography className={classes.instructions}>
-                Môžete pokračovať na nasledujúcu sekciu Na odberovom mieste.
+                Môžete pokračovať na nasledujúcu sekciu <Link href="#na-odbernom-mieste">Na odberovom mieste</Link>.
               </Typography>
             </>
           )}
