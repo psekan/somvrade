@@ -5,6 +5,7 @@ import DuringTestingStepper from "./DuringTestingStepper";
 import PlaceInputForm from './PlaceInputForm';
 import {PlacesContext} from './PlacesContext';
 import { PlaceType } from './PlaceType';
+import Alert from '@material-ui/lab/Alert';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -62,6 +63,10 @@ function App() {
         <Typography variant="h5" gutterBottom className={classes.header}>
           Ako bude stránka fungovať?
         </Typography>
+        <Alert severity="warning">
+          Ospravedlňujeme sa za momentálne výpadky služby. Služba je v pilotnom testovaní a v priebehu dnešného dňa
+          prebehne navýšenie výpočtových zdrojov pre bezproblémový beh počas víkendu.
+        </Alert>
         <Typography variant="body1" gutterBottom>
           Momentálne je stránka vo vývoji, informácie o samotnom vývoji získate nižšie. Princíp fungovania stránky bude ale nasledovný:
         </Typography>
@@ -81,6 +86,10 @@ function App() {
           Zoznam odberných miest sa ešte len vytvára. Ak už ale viete, aké odberné miesto bude vo Vašej obci,
           môžete nám pomôcť a pridať ho do systému.
         </Typography>
+        <Alert severity="warning">
+          Ospravedlňujeme sa za momentálne výpadky služby. Služba je v pilotnom testovaní a v priebehu dnešného dňa
+          prebehne navýšenie výpočtových zdrojov pre bezproblémový beh počas víkendu.
+        </Alert>
         <PlaceInputForm onChange={refreshPlaces}/>
 
         <Typography variant="h5" gutterBottom className={classes.header}>
