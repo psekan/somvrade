@@ -21,16 +21,35 @@ function App() {
   const [placesError, setPlacesError] = React.useState<string|null>(null);
 
   const refreshPlaces = () => {
-    fetch("/api/places")
-      .then(res => res.json())
-      .then(
-        (result) => {
-          setPlaces(result);
-        },
-        (error) => {
-          setPlacesError(error);
-        }
-    )
+    // fetch("/api/places")
+    //   .then(res => res.json())
+    //   .then(
+    //     (result) => {
+    //       setPlaces(result);
+    //     },
+    //     (error) => {
+    //       setPlacesError(error);
+    //     }
+    // )
+    setPlacesError(null);
+    setPlaces([
+      {id:374,village:"Abrah\u00e1m","district":"Abrah\u00e1m ","place":"Kult\u00farny dom","created_at":"2020-10-29T11:38:49.000000Z","updated_at":"2020-10-29T11:38:49.000000Z"},
+      {id:558,village:"Abrah\u00e1m","district":"Kult\u00farny dom","place":"Abrah\u00e1m","created_at":"2020-10-29T12:19:08.000000Z","updated_at":"2020-10-29T12:19:08.000000Z"},
+      {id:85,village:"\u017dilina","district":"Solinky","place":"Z\u0160 Limbov\u00e1 30","created_at":"2020-10-29T09:23:16.000000Z","updated_at":"2020-10-29T09:23:16.000000Z"},
+      {id:76,village:"\u017dilina","district":"Star\u00e9 mesto","place":"CZ\u0160 Romualda Zaymusa 3","created_at":"2020-10-29T09:17:05.000000Z","updated_at":"2020-10-29T09:17:05.000000Z"},
+      {id:58,village:"\u017dilina","district":"Star\u00e9 mesto","place":"Mestsk\u00fd \u00farad","created_at":"2020-10-29T09:10:48.000000Z","updated_at":"2020-10-29T09:10:48.000000Z"},
+      {id:56,village:"\u017dilina","district":"Star\u00e9 mesto","place":"Nov\u00e1 synag\u00f3ga","created_at":"2020-10-29T09:10:15.000000Z","updated_at":"2020-10-29T09:10:15.000000Z"},
+      {id:60,village:"\u017dilina","district":"Star\u00e9 mesto","place":"Spojen\u00e1 \u0161kola Kr\u00e1\u013eovnej pokoja","created_at":"2020-10-29T09:12:08.000000Z","updated_at":"2020-10-29T09:12:08.000000Z"},
+      {id:74,village:"\u017dilina","district":"Star\u00e9 mesto","place":"Stredn\u00e1 priemysel. \u0161kola stavebn\u00e1","created_at":"2020-10-29T09:16:03.000000Z","updated_at":"2020-10-29T09:16:03.000000Z"},
+      {id:62,village:"\u017dilina","district":"Star\u00e9 mesto","place":"Z\u0160 Holl\u00e9ho 66","created_at":"2020-10-29T09:13:29.000000Z","updated_at":"2020-10-29T09:13:29.000000Z"},
+      {id:137,village:"\u017dilina","district":"Str\u00e1\u017eov","place":"Marakana","created_at":"2020-10-29T09:32:03.000000Z","updated_at":"2020-10-29T09:32:03.000000Z"},
+      {id:45,village:"Zlat\u00e9 Moravce","district":"Zlat\u00e9 Moravce","place":"Mestsk\u00fd \u0161tadi\u00f3n ihrisko","created_at":"2020-10-29T09:06:34.000000Z","updated_at":"2020-10-29T09:06:34.000000Z"},
+      {id:55,village:"Zlat\u00e9 Moravce","district":"Zlat\u00e9 Moravce","place":"Slu\u017ebyt mestsk\u00fd podnik","created_at":"2020-10-29T09:10:01.000000Z","updated_at":"2020-10-29T09:10:01.000000Z"},
+      {id:57,village:"Zlat\u00e9 Moravce","district":"Zlat\u00e9 Moravce","place":"Stredn\u00e1 odborn\u00e1 \u0161kola technick\u00e1","created_at":"2020-10-29T09:10:31.000000Z","updated_at":"2020-10-29T09:10:31.000000Z"},
+      {id:41,village:"Zlat\u00e9 Moravce","district":"Zlat\u00e9 Moravce","place":"Z\u0160 Mojm\u00edrova","created_at":"2020-10-29T09:05:33.000000Z","updated_at":"2020-10-29T09:05:33.000000Z"},
+      {id:398,village:"Zvolen ","district":"Podborov\u00e1","place":"SO\u0160 hotelov\u00fdch slu\u017eieb a obchodu, Jablo\u0148ov\u00e1 1351","created_at":"2020-10-29T11:46:08.000000Z","updated_at":"2020-10-29T11:46:08.000000Z"},
+      {id:12,village:"Zvolen","district":"Sekier/Lipovec/M\u00f4\u0165ov\u00e1","place":"Futbalov\u00fd \u0161tadi\u00f3n ","created_at":"2020-10-29T08:45:59.000000Z","updated_at":"2020-10-29T08:45:59.000000Z"}
+      ]);
   }
   useEffect(refreshPlaces, [])
 
