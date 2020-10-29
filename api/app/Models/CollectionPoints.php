@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class CollectionPoint extends Model
+class CollectionPoints extends Model
 {
 
     /**
@@ -13,7 +13,7 @@ class CollectionPoint extends Model
      * @var array
      */
     protected $fillable = [
-        'county', 'city', 'district', 'place'
+        'county', 'city', 'district', 'place', 'active'
     ];
 
     /**

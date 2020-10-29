@@ -18,6 +18,24 @@ $router->get('/', function () use ($router) {
 });
 
 $router->group(['prefix' => 'api'], function () use ($router) {
-    $router->get('collectionpoints',  ['uses' => 'CollectionPointsController@showAll']);
-    $router->post('collectionpoints', ['uses' => 'CollectionPointsController@create']);
+    $router->get('collectionpoints',  'CollectionPointsController@showAll');
+    $router->group([
+        'middleware' => 'auth',
+    ], function ($router) {
+        $router->get('collectionpoints/{id}', 'CollectionPointsController@showOne');
+        $router->post('collectionpoints', 'CollectionPointsController@create');
+        $router->delete('collectionpoints/{id}', 'CollectionPointsController@delete');
+        $router->put('collectionpoints/{id}', 'CollectionPointsController@update');
+    });
+
+    $router->post('register', 'AuthController@register');
+    $router->post('login', 'AuthController@login');
+    $router->group([
+        'middleware' => 'auth',
+        'prefix' => 'auth'
+    ], function ($router) {
+        $router->post('logout', 'AuthController@logout');
+        $router->post('refresh', 'AuthController@refresh');
+        $router->post('me', 'AuthController@me');
+    });
 });
