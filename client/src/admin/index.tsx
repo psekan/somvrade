@@ -9,7 +9,6 @@ export function Admin() {
   const [session] = useSession();
 
   useEffect(() => {
-    console.log('here');
     history.replace(session.isLoggedIn ? '/admin' : '/admin/login');
   }, [history, session]);
 
