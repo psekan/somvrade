@@ -6,6 +6,7 @@ use App\Models\Entry;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Cache\Repository as Cache;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class EntryController extends Controller
 {
@@ -71,7 +72,7 @@ class EntryController extends Controller
         ]);
 
         $entry = Entry::query()->findOrFail($eid);
-        if ($entry->get('token') != $request->get('token')) {
+        if ($entry->token != $request->get('token')) {
             return response()->json(['message' => 'Unauthorized'], 401);
         }
         $entry->update($request->only('departure'));
@@ -106,7 +107,7 @@ class EntryController extends Controller
     public function delete($id, $eid, Request $request)
     {
         $entry = Entry::query()->findOrFail($eid);
-        if ($entry->get('token') != $request->get('token')) {
+        if ($entry->token != $request->get('token')) {
             return response()->json(['message' => 'Unauthorized'], 401);
         }
         $entry->delete();
