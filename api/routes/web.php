@@ -13,11 +13,10 @@
 |
 */
 
-$router->get('/', function () use ($router) {
-    return $router->app->version();
-});
-
 $router->group(['prefix' => 'api'], function () use ($router) {
+    $router->get('version', function () use ($router) {
+        return $router->app->version();
+    });
     $router->get('collectionpoints',  'CollectionPointsController@showAll');
     $router->get('collectionpoints/waiting',  'CollectionPointsController@showAllWaiting');
     $router->post('collectionpoints', 'CollectionPointsController@create');
