@@ -10,6 +10,7 @@ import {
   TableHead,
   IconButton,
   Divider,
+  TablePagination,
 } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import LinearProgress from '@material-ui/core/LinearProgress';
@@ -36,30 +37,46 @@ const useStyles = makeStyles({
   },
 });
 
-export function CollectionPoints() {
+type CollectionPointsProps = {
+  onlyWaiting: boolean
+}
+
+export function CollectionPoints(props: CollectionPointsProps) {
   const classes = useStyles();
   const [session] = useSession();
   const [editingEntity, setEditingEntity] = useState<CollectionPointEntity>();
-  const { isLoading, response, error, refresh } = useCollectionPoints();
+  let { isLoading, response, error, refresh } = useCollectionPoints(props.onlyWaiting);
+
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+
+  const handleChangePage = (event: unknown, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
 
   return (
     <>
       <TableContainer component={Paper}>
         {isLoading && <LinearProgress />}
         {error && <Alert severity={'error'}>{JSON.stringify(error)}</Alert>}
-        <Table className={classes.table}>
+        <Table className={classes.table} size="small">
           <TableHead>
             <TableRow>
-              <TableCell>Názov odbérneho miesta</TableCell>
               <TableCell>Okres</TableCell>
               <TableCell>Mesto/Obec</TableCell>
               <TableCell>Okrsok</TableCell>
+              <TableCell>Názov odbérneho miesta</TableCell>
               <TableCell>Status</TableCell>
               <TableCell align="right">Možnosti</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {(response?.data || []).map(row => (
+            {(response || []).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => (
               <Row
                 key={row.id}
                 entity={row}
@@ -71,6 +88,15 @@ export function CollectionPoints() {
           </TableBody>
         </Table>
       </TableContainer>
+      <TablePagination
+        rowsPerPageOptions={[5, 10, 25]}
+        component="div"
+        count={(response || []).length}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        onChangePage={handleChangePage}
+        onChangeRowsPerPage={handleChangeRowsPerPage}
+      />
       <EditDialog
         entity={editingEntity}
         onCancel={() => setEditingEntity(undefined)}
@@ -110,7 +136,7 @@ function Row({
   async function handleApprove(entity: CollectionPointEntity) {
     setActionLoading(true);
     try {
-      await approveCollectionPoint(entity.id, session);
+      await approveCollectionPoint(entity, session);
       onActionDone();
     } finally {
       setActionLoading(false);
@@ -120,9 +146,6 @@ function Row({
   return (
     <TableRow key={entity.id}>
       <TableCell component="th" scope="row">
-        {entity.place}
-      </TableCell>
-      <TableCell component="th" scope="row">
         {entity.county}
       </TableCell>
       <TableCell component="th" scope="row">
@@ -130,6 +153,9 @@ function Row({
       </TableCell>
       <TableCell component="th" scope="row">
         {entity.district}
+      </TableCell>
+      <TableCell component="th" scope="row">
+        {entity.place}
       </TableCell>
       <TableCell component="th" scope="row">
         {entity.active ? 'Aktívne' : 'Neaktívne'}

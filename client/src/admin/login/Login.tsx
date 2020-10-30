@@ -41,12 +41,12 @@ export function LoginPage() {
 
     try {
       if (!username || !password) {
-        throw new Error('username and password required');
+        throw new Error('email and password required');
       }
       setLoginLoading(true);
       const resp = await login(form.username.value, form.password.value);
       sessionActions.initSecureSession({
-        accessToken: resp.access_token,
+        accessToken: resp.token,
         tokenType: resp.token_type,
         expiresIn: resp.expires_in,
       });
@@ -64,7 +64,7 @@ export function LoginPage() {
     <Paper className={classes.container}>
       <Typography variant={'h4'}>Prihlásenie</Typography>
       <form onSubmit={handleSubmit} className={classes.form}>
-        <TextField name={'username'} label={'Používateľské meno'} variant={'outlined'} />
+        <TextField name={'username'} label={'Email'} variant={'outlined'} />
         <TextField name={'password'} type={'password'} label={'Heslo'} variant={'outlined'} />
         <Button type={'submit'} variant={'contained'} color={'primary'} disabled={isLoginLoading}>
           Prihlás sa

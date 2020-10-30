@@ -18,7 +18,7 @@ class CreateCollectionPointsTable extends Migration
             $table->string('county', 60)->index('county');
             $table->string('city', 60)->index('city');
             $table->string('district', 60)->index('district');
-            $table->string('place', 250)->index('place');
+            $table->string('place', 150)->index('place');
             $table->boolean('active')->default(false)->index('active');
             $table->timestamps();
         });

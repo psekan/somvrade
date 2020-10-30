@@ -5,6 +5,7 @@ import DuringTestingStepper from './components/DuringTestingStepper';
 import PlaceInputForm from './components/PlaceInputForm';
 import { PlacesContext } from './components/PlacesContext';
 import { PlaceType } from './components/PlaceType';
+import Alert from '@material-ui/lab/Alert';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -79,16 +80,17 @@ export function HomePage() {
         <DuringTestingStepper />
 
         <Typography variant="h5" gutterBottom className={classes.header} id="pridat-odberne-miesto">
-          Pridajte odberné miesto
+          Požiadať o pridanie odberného miesta
         </Typography>
         <Typography variant="body1" gutterBottom>
-          Zoznam odberných miest sa ešte len vytvára. Ak už ale viete, aké odberné miesto bude vo
-          Vašej obci, môžete nám pomôcť a pridať ho do systému.
+          Momentálne máme niekoľko stoviek požiadaviek na pridanie odberového miesta. Snažíme sa ich prechádzať a
+          odstraňovať duplicitné, prípadne zle zadané miesta. Stále Vám chceme ale nechať možnosť, pridať aj Vaše
+          odberné miesto, ak v zozname vyšie ešte nie je uvedené.
         </Typography>
-        {/*<Alert severity="warning">*/}
-        {/*  Ospravedlňujeme sa za momentálne výpadky služby. Služba je v pilotnom testovaní a v priebehu dnešného dňa*/}
-        {/*  prebehne navýšenie výpočtových zdrojov pre bezproblémový beh počas víkendu.*/}
-        {/*</Alert>*/}
+        <Alert severity="warning">
+          Skontrolujte, či sa odberné miesto už nenachádza v systéme. Vášu požiadavku na pridanie sa budeme
+          snažiť schváliť čo najskôr.
+        </Alert>
         <PlaceInputForm onChange={refreshPlaces} />
 
         <Typography variant="h5" gutterBottom className={classes.header}>

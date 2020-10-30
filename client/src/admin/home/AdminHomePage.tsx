@@ -49,7 +49,7 @@ export function AdminHomePage() {
             Administrácia
           </Typography>
           <Button onClick={() => sessionActions.destroySession()} color="inherit">
-            Ohlásenie
+            Odhlásenie
           </Button>
         </Toolbar>
       </AppBar>
@@ -57,10 +57,14 @@ export function AdminHomePage() {
         <AppBar position="static">
           <Tabs variant={'fullWidth'} value={value} onChange={handleChange}>
             <Tab label={'Odberné miesta'} />
+            <Tab label={'Čakajúce na schválenie'} />
           </Tabs>
         </AppBar>
         <TabPanel value={value} index={0}>
-          <CollectionPoints />
+          <CollectionPoints onlyWaiting={false}/>
+        </TabPanel>
+        <TabPanel value={value} index={1}>
+          <CollectionPoints onlyWaiting={true}/>
         </TabPanel>
       </Paper>
     </>
