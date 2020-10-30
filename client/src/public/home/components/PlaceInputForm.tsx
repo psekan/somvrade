@@ -13,7 +13,8 @@ const useStyles = makeStyles((theme: Theme) =>
 enum formStateType {
   Input,
   Error,
-  Success
+  Success,
+  WrongInputs
 }
 
 type PlaceInputFormProps = {
@@ -30,7 +31,7 @@ export default function PlaceInputForm(props: PlaceInputFormProps) {
 
   return (
     <Grid container justify="center" spacing={2}>
-      {(formState === formStateType.Input || formState === formStateType.Error) && (
+      {(formState === formStateType.Input || formState === formStateType.Error || formState === formStateType.WrongInputs) && (
         <>
           <Grid item xs={12} md={3}>
             <TextField
@@ -81,35 +82,48 @@ export default function PlaceInputForm(props: PlaceInputFormProps) {
               variant="contained"
               color="primary"
               onClick={() => {
-                fetch('/api/collectionpoints', {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json',
-                  },
-                  body: JSON.stringify({
-                    county,
-                    city,
-                    district,
-                    place
-                  }),
-                })
-                  .then(response => {
-                    if (response.status === 201) {
-                      setFormState(formStateType.Success);
-                      props.onChange();
-                    }
-                    else {
-                      setFormState(formStateType.Error);
-                    }
+                if (county && city && district && place &&
+                  county.trim().length !== 0 && city.trim().length !== 0 &&
+                  district.trim().length !== 0 && place.trim().length !== 0) {
+                  fetch('/api/collectionpoints', {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                      county,
+                      city,
+                      district,
+                      place
+                    }),
                   })
-                  .catch((error) => {
-                    setFormState(formStateType.Error);
-                  });
+                    .then(response => {
+                      if (response.status === 201) {
+                        setFormState(formStateType.Success);
+                        props.onChange();
+                      }
+                      else {
+                        setFormState(formStateType.Error);
+                      }
+                    })
+                    .catch((error) => {
+                      setFormState(formStateType.Error);
+                    });
+                }
+                else {
+                  setFormState(formStateType.WrongInputs);
+                }
               }}
             >
               Podať žiadosť
             </Button>
           </Grid>
+          {formState === formStateType.WrongInputs && (
+            <Grid item xs={12}>
+              <Alert severity="warning">Prosíme, vyplňte všetky polia. Ak vypĺňate informácie za obec,
+                do pola Časť obce/mesta zadajte opakovane názov obce.</Alert>
+            </Grid>
+          )}
           {formState === formStateType.Error && (
             <Grid item xs={12}>
               <Alert severity="error">Ospravedlňujeme sa, ale nastal neznámy problém. Vyskúšajte zopakovať požiadavku

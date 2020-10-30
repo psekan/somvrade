@@ -89,7 +89,7 @@ export function CollectionPoints(props: CollectionPointsProps) {
         </Table>
       </TableContainer>
       <TablePagination
-        rowsPerPageOptions={[5, 10, 25]}
+        rowsPerPageOptions={[5, 10, 25, 50, 100, 200]}
         component="div"
         count={(response || []).length}
         rowsPerPage={rowsPerPage}

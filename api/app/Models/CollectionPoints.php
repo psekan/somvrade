@@ -13,7 +13,7 @@ class CollectionPoints extends Model
      * @var array
      */
     protected $fillable = [
-        'county', 'city', 'district', 'place', 'active'
+        'county', 'city', 'address', 'unoccupied'
     ];
 
     /**
@@ -23,6 +23,8 @@ class CollectionPoints extends Model
      */
     protected $hidden = [
         'created_at',
-        'updated_at'
+        'updated_at',
+        'code',
+        'region'
     ];
 }

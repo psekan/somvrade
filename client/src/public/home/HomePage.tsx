@@ -83,15 +83,23 @@ export function HomePage() {
           Požiadať o pridanie odberného miesta
         </Typography>
         <Typography variant="body1" gutterBottom>
-          Momentálne máme niekoľko stoviek požiadaviek na pridanie odberového miesta. Snažíme sa ich prechádzať a
-          odstraňovať duplicitné, prípadne zle zadané miesta. Stále Vám chceme ale nechať možnosť, pridať aj Vaše
-          odberné miesto, ak v zozname vyšie ešte nie je uvedené.
+          Stránka https://www.somzodpovedny.sk/zoznam-lokalit/ zverejnila všetky odberné miesta, preto zastavujeme možnosť
+          pridávania nových odberných miest a pracujeme na zapracovaní zoznamu podľa uvedenej stránky.
+          Ďakujeme za Váš čas a priazen.
         </Typography>
         <Alert severity="warning">
-          Skontrolujte, či sa odberné miesto už nenachádza v systéme. Vášu požiadavku na pridanie sa budeme
-          snažiť schváliť čo najskôr.
+          Pridávanie odberných miesto bolo pozastavené.
         </Alert>
-        <PlaceInputForm onChange={refreshPlaces} />
+        {/*<Typography variant="body1" gutterBottom>*/}
+        {/*  Momentálne máme niekoľko stoviek požiadaviek na pridanie odberového miesta. Snažíme sa ich prechádzať a*/}
+        {/*  odstraňovať duplicitné, prípadne zle zadané miesta. Stále Vám chceme ale nechať možnosť, pridať aj Vaše*/}
+        {/*  odberné miesto, ak v zozname vyšie ešte nie je uvedené.*/}
+        {/*</Typography>*/}
+        {/*<Alert severity="warning">*/}
+        {/*  Skontrolujte, či sa odberné miesto už nenachádza v systéme. Vášu požiadavku na pridanie sa budeme*/}
+        {/*  snažiť schváliť čo najskôr.*/}
+        {/*</Alert>*/}
+        {/*<PlaceInputForm onChange={refreshPlaces} />*/}
 
         <Typography variant="h5" gutterBottom className={classes.header}>
           Prosba
