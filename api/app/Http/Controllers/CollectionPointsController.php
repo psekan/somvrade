@@ -38,7 +38,7 @@ class CollectionPointsController extends Controller
                 ->orderBy('city')
                 ->orderBy('district')
                 ->orderBy('place')
-                ->get();
+                ->get()->makeHidden('active');
             $this->cache->set(self::CACHE_KEY, $places);
         }
         else {
