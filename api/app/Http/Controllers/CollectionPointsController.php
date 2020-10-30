@@ -20,10 +20,23 @@ class CollectionPointsController extends Controller
         $this->cache = $cache;
     }
 
+    public function refreshCache() {
+        $places = CollectionPoints::query()
+            ->where('active', true)
+            ->orderBy('county')
+            ->orderBy('city')
+            ->orderBy('district')
+            ->orderBy('place')
+            ->get()->makeHidden('active');
+        $this->cache->set(self::CACHE_KEY, $places);
+        return $places;
+    }
+
     public function showAll()
     {
         if (auth()->check()) {
             return response()->json(CollectionPoints::query()
+                ->where('active', true)
                 ->orderBy('county')
                 ->orderBy('city')
                 ->orderBy('district')
@@ -32,14 +45,7 @@ class CollectionPointsController extends Controller
         }
 
         if (!$this->cache->has(self::CACHE_KEY)) {
-            $places = CollectionPoints::query()
-                ->where('active', true)
-                ->orderBy('county')
-                ->orderBy('city')
-                ->orderBy('district')
-                ->orderBy('place')
-                ->get();
-            $this->cache->set(self::CACHE_KEY, $places);
+            $places = $this->refreshCache();
         }
         else {
             $places = $this->cache->get(self::CACHE_KEY);
@@ -47,10 +53,17 @@ class CollectionPointsController extends Controller
         return response()->json($places);
     }
 
+    public function showAllWaiting()
+    {
+        return response()->json(CollectionPoints::query()
+            ->where('active', false)
+            ->orderBy('created_at')
+            ->get());
+    }
+
     public function create(Request $request)
     {
         $Place = CollectionPoints::query()->create($request->all());
-        $this->cache->delete(self::CACHE_KEY);
         return response()->json($Place, 201);
     }
 
@@ -63,14 +76,14 @@ class CollectionPointsController extends Controller
     {
         $author = CollectionPoints::query()->findOrFail($id);
         $author->update($request->all());
-        $this->cache->delete(self::CACHE_KEY);
+        $this->refreshCache();
         return response()->json($author, 200);
     }
 
     public function delete($id)
     {
         CollectionPoints::query()->findOrFail($id)->delete();
-        $this->cache->delete(self::CACHE_KEY);
+        $this->refreshCache();
         return response('Deleted Successfully', 200);
     }
 }

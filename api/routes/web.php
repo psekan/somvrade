@@ -19,11 +19,12 @@ $router->get('/', function () use ($router) {
 
 $router->group(['prefix' => 'api'], function () use ($router) {
     $router->get('collectionpoints',  'CollectionPointsController@showAll');
+    $router->get('collectionpoints/waiting',  'CollectionPointsController@showAllWaiting');
+    $router->post('collectionpoints', 'CollectionPointsController@create');
     $router->group([
         'middleware' => 'auth',
     ], function ($router) {
         $router->get('collectionpoints/{id}', 'CollectionPointsController@showOne');
-        $router->post('collectionpoints', 'CollectionPointsController@create');
         $router->delete('collectionpoints/{id}', 'CollectionPointsController@delete');
         $router->put('collectionpoints/{id}', 'CollectionPointsController@update');
     });

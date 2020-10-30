@@ -83,13 +83,6 @@ export function EditDialog({
       <DialogContent>
         <TextField
           {...commonInputProps}
-          name={'place'}
-          label="Názov odberného miesta"
-          value={state?.place || ''}
-          onChange={handleInputChange}
-        />
-        <TextField
-          {...commonInputProps}
           name={'county'}
           label="Okres"
           value={state?.county || ''}
@@ -107,6 +100,13 @@ export function EditDialog({
           name={'district'}
           label="Okrsok"
           value={state?.district || ''}
+          onChange={handleInputChange}
+        />
+        <TextField
+          {...commonInputProps}
+          name={'place'}
+          label="Názov odberného miesta"
+          value={state?.place || ''}
           onChange={handleInputChange}
         />
         <FormControlLabel

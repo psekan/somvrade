@@ -107,7 +107,7 @@ export default function PlaceInputForm(props: PlaceInputFormProps) {
                   });
               }}
             >
-              Pridať odberné miesto
+              Podať žiadosť
             </Button>
           </Grid>
           {formState === formStateType.Error && (
@@ -121,7 +121,8 @@ export default function PlaceInputForm(props: PlaceInputFormProps) {
       {formState === formStateType.Success && (
         <>
           <Grid item xs={12}>
-            <Alert severity="success">Ďakujeme za pridanie odberného miesta. Ak viete o ďalších, prosíme, pridajte aj tie.</Alert>
+            <Alert severity="success">Ďakujeme za Vašu žiadosť o pridanie odberného miesta.
+              Ak viete o ďalších, ktoré ešte v zozname nemáme, prosíme, pridajte aj tie.</Alert>
           </Grid>
           <Grid item xs={12}>
             <Button
