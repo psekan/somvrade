@@ -6,7 +6,6 @@ use App\Models\Entry;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Cache\Repository as Cache;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Log;
 
 class EntryController extends Controller
 {
@@ -52,6 +51,10 @@ class EntryController extends Controller
             'length' => 'required'
         ]);
 
+        if (strtotime($request->get('arrive')) > time()) {
+            return response()->json(['message' => 'Bad request'], 401);
+        }
+
         $token = openssl_random_pseudo_bytes(16);
         $token = bin2hex($token);
 
@@ -64,7 +67,7 @@ class EntryController extends Controller
         return response()->json($entry, 201);
     }
 
-    public function update($id, $eid, Request $request)
+    public function update($eid, Request $request)
     {
         $this->validate($request, [
             'token' => 'required',
@@ -76,11 +79,11 @@ class EntryController extends Controller
             return response()->json(['message' => 'Unauthorized'], 401);
         }
         $entry->update($request->only('departure'));
-        $this->refreshCache($id);
+        $this->refreshCache($entry->collection_point_id);
         return response()->json($entry, 200);
     }
 
-    public function maskAsMisinformation($id, $eid, Request $request)
+    public function maskAsMisinformation($eid, Request $request)
     {
         $cacheKey = self::CACHE_MISINFO_KEY.$request->ip();
         if ($this->cache->has($cacheKey)) {
@@ -100,18 +103,18 @@ class EntryController extends Controller
             $object['ips'][] = $request->ip();
         }
         $entry->update(['misinformation' => json_encode($object)]);
-        $this->refreshCache($id);
+        $this->refreshCache($entry->collection_point_id);
         return response()->json($entry, 200);
     }
 
-    public function delete($id, $eid, Request $request)
+    public function delete($eid, Request $request)
     {
         $entry = Entry::query()->findOrFail($eid);
         if ($entry->token != $request->get('token')) {
             return response()->json(['message' => 'Unauthorized'], 401);
         }
         $entry->delete();
-        $this->refreshCache($id);
+        $this->refreshCache($entry->collection_point_id);
         return response()->json(['message' => 'Deleted Successfully.'], 200);
     }
 }

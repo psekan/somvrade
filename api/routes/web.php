@@ -21,8 +21,9 @@ $router->group(['prefix' => 'api'], function () use ($router) {
     $router->get('collectionpoints/{id}', 'CollectionPointsController@showOne');
     $router->get('collectionpoints/{id}/entries',  'EntryController@showAll');
     $router->post('collectionpoints/{id}/entries',  'EntryController@create');
-    $router->put('collectionpoints/{id}/entries/{eid}',  'EntryController@update');
-    $router->delete('collectionpoints/{id}/entries/{eid}',  'EntryController@delete');
+    $router->put('entries/{eid}',  'EntryController@update');
+    $router->delete('entries/{eid}',  'EntryController@delete');
+    $router->post('entries/{eid}/misinformation',  'EntryController@maskAsMisinformation');
     $router->group([
         'middleware' => 'auth',
     ], function ($router) {
