@@ -6,6 +6,7 @@ use App\Models\Entry;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Cache\Repository as Cache;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
 use ReCaptcha\ReCaptcha;
 
 class EntryController extends Controller
@@ -26,9 +27,8 @@ class EntryController extends Controller
     public function refreshCache($id) {
         $entries = Entry::query()
             ->where('collection_point_id', $id)
-            ->where('arrive','<=', date('h:i:s'))
             ->orderBy('arrive', 'desc')
-            ->limit(30)
+            ->limit(100)
             ->get()->makeHidden(['token', 'collection_point_id']);
         $this->cache->set(self::CACHE_KEY.$id, $entries);
         return $entries;
@@ -47,11 +47,20 @@ class EntryController extends Controller
 
     public function create($id, Request $request)
     {
-        $this->validate($request, [
-            'arrive' => 'required',
-            'length' => 'required',
-            'recaptcha' => 'required'
-        ]);
+        try {
+            $this->validate($request, [
+                'arrive' => 'required',
+                'length' => 'required',
+                'recaptcha' => 'required'
+            ]);
+        }
+        catch (\Throwable $ex) {
+            Log::error($request->getContentType());
+            Log::error($request->getContent());
+            Log::error($ex->getMessage());
+            Log::error($ex->getTraceAsString());
+            throw $ex;
+        }
 
         if ($this->verifyCaptcha($request->get('recaptcha'),$request->ip()) != true) {
             return response()->json(['message' => 'Unauthorized'], 401);
@@ -69,6 +78,7 @@ class EntryController extends Controller
             'token' => $token,
             'misinformation' => ''
         ])->all());
+        $this->refreshCache($id);
         return response()->json($entry, 201);
     }
 
