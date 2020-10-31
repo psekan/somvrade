@@ -19,6 +19,10 @@ const useStyles = makeStyles({
     fontStyle: 'italic',
     fontSize: '1.2rem',
     lineHeight: '1.2rem',
+    '& a': {
+      textDecoration: 'none',
+      color: 'inherit',
+    },
   },
   placesSelect: {
     margin: '20px 0',
@@ -52,7 +56,7 @@ export function PlaceDetail({ county, id, showSearch, limitTable, className }: P
     <LinearProgress />
   ) : (
     <div className={className}>
-      {!detail && !error && <Alert severity={'warning'}>Miesto nenajdene</Alert>}
+      {!detail && !error && <Alert severity={'warning'}>Odberné miesto nenájdene</Alert>}
       {error && (
         <Alert
           severity={'error'}
@@ -79,7 +83,10 @@ export function PlaceDetail({ county, id, showSearch, limitTable, className }: P
           )}
           <div className={classes.locationContainer}>
             <Typography variant={'subtitle1'} gutterBottom className={classes.placeTitle}>
-              <PlaceIcon fontSize={'small'} /> {detail.address}{' '}
+              <PlaceIcon fontSize={'small'} />{' '}
+              <RouterLink to={`/aktualne-pocty-cakajucich/${county}/${id}`}>
+                {detail.address}
+              </RouterLink>{' '}
             </Typography>
             <IconButton
               onClick={() => sessionActions.setFavorite(county, id)}

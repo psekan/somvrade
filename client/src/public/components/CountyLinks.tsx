@@ -38,7 +38,7 @@ export function CountyLinks({ linkBase, selected }: CountyLinksProps) {
           key={county.id}
           to={selected ? linkBase : `${linkBase}/${county.id}`}
           label={county.name.split(' ')[0]}
-          description={selected ? <i className={classes.changeLink}>Zmenit</i> : undefined}
+          description={selected ? <i className={classes.changeLink}>Zmeniť</i> : undefined}
           className={classes.countyLink}
         />
       ))}
