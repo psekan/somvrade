@@ -1,5 +1,5 @@
 import React from 'react';
-import { Switch, Route } from 'react-router-dom';
+import { Switch, Route, Redirect } from 'react-router-dom';
 import { Container } from './components/Container';
 import { HomePage } from './home/HomePage';
 import { CheckWaiting, PlaceDetail as CheckWaitingPlaceDetail } from './checkwaiting';
@@ -34,6 +34,7 @@ export function Public() {
         <Route path="/zadat-pocet-cakajucich/:county/:id/register" exact>
           <PlaceRegister />
         </Route>
+        <Redirect exact path={'//'} to={'/'} />
         <Route default>
           <NotFound />
         </Route>
