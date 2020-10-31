@@ -5,15 +5,25 @@ const defaultSession: Session = {
 };
 
 const STORAGE_KEY = '@somvrade';
+const STORAGE_KEY_COL_POINT_TOKEN = '@somvrade_cl_p_token';
 
 const initialActions: SessionContextActions = {
   initSecureSession: () => null,
   destroySession: () => null,
+  registerToCollectionPoint: () => null,
+  completeCollectionPoint: () => null,
 };
 
 export interface Session {
   isLoggedIn: boolean;
   token?: Token;
+  isRegistered?: boolean;
+  registeredToken?: {
+    token: string;
+    entryId: string;
+    county: string;
+    completed: boolean;
+  };
 }
 
 type SessionContextType = [Session, SessionContextActions];
@@ -26,6 +36,8 @@ export interface Token {
 
 interface SessionContextActions {
   initSecureSession: (token: Token) => void;
+  registerToCollectionPoint: (token: string, entityId: string, county: string) => void;
+  completeCollectionPoint: () => void;
   destroySession: () => void;
 }
 
@@ -46,6 +58,25 @@ export function SessionContextProvider({ children }: React.PropsWithChildren<{}>
           sessionStorage.removeItem(STORAGE_KEY);
           setState({ ...defaultSession });
         },
+        registerToCollectionPoint: (token, entryId, county) => {
+          const registeredObj = {
+            token,
+            entryId,
+            completed: false,
+            county,
+          };
+          localStorage.setItem(STORAGE_KEY_COL_POINT_TOKEN, JSON.stringify(registeredObj));
+          setState({ ...state, isRegistered: true, registeredToken: registeredObj });
+        },
+        completeCollectionPoint: () => {
+          const newRegistrationToken = { ...state.registeredToken, completed: true };
+          localStorage.setItem(STORAGE_KEY_COL_POINT_TOKEN, JSON.stringify(newRegistrationToken));
+          setState({
+            ...state,
+            isRegistered: true,
+            registeredToken: newRegistrationToken as any,
+          });
+        },
       },
     ];
   }, [state]);
@@ -59,14 +90,25 @@ export function useSession() {
 
 function restoreSession(): Session | undefined {
   try {
+    const restored: Session = {} as any;
     const tokenFromStorage = sessionStorage.getItem(STORAGE_KEY);
     const restoredSessionToken: Token = tokenFromStorage ? JSON.parse(tokenFromStorage) : {};
-    if (restoredSessionToken.accessToken && restoredSessionToken.tokenType) {
-      return {
-        isLoggedIn: true,
-        token: restoredSessionToken,
-      };
+    const isAdminLoggedId = restoredSessionToken.accessToken && restoredSessionToken.tokenType;
+    if (isAdminLoggedId) {
+      restored.isLoggedIn = true;
+      restored.token = restoredSessionToken;
     }
+
+    const registeredCollectionPointToken = localStorage.getItem(STORAGE_KEY_COL_POINT_TOKEN);
+    const parsedRegisteredCollectionPointToken =
+      registeredCollectionPointToken && JSON.parse(registeredCollectionPointToken);
+
+    if (registeredCollectionPointToken) {
+      restored.isRegistered = true;
+      restored.registeredToken = parsedRegisteredCollectionPointToken;
+    }
+
+    return restored;
   } catch {
     return undefined;
   }

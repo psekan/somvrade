@@ -1,18 +1,23 @@
 import { useState, useEffect, useRef } from 'react';
 import { fetchJson } from '../utils';
 
-export function useFetch<T>(url: string, options?: RequestInit) {
+export function useFetch<T>(url: string, options?: RequestInit, cacheTime?: number) {
   const [response, setResponse] = useState<T>();
   const [error, setError] = useState(null);
   const [isLoading, setLoading] = useState(true);
+  const mounted = useRef(true);
 
   const fetchData = async () => {
     try {
       setLoading(true);
-      const res = await fetchJson(ref.current.url, ref.current.options);
-      setResponse(res);
+      const res = await fetchJson(ref.current.url, ref.current.options, cacheTime);
+      if (mounted.current) {
+        setResponse(res);
+      }
     } catch (error) {
-      setError(error);
+      if (mounted.current) {
+        setError(error);
+      }
     } finally {
       setLoading(false);
     }
@@ -21,8 +26,14 @@ export function useFetch<T>(url: string, options?: RequestInit) {
   const ref = useRef({ url, options, fetchData });
 
   useEffect(() => {
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
+
+  useEffect(() => {
     ref.current.fetchData();
-  }, [ref]);
+  }, [ref, url]);
 
   useEffect(() => {
     ref.current = { url, options, fetchData };

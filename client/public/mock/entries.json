@@ -1,0 +1,20 @@
+[
+  {
+    "id": "1",
+    "arrive": "11:20",
+    "departure": "11:40",
+    "length": 20
+  },
+  {
+    "id": "2",
+    "arrive": "11:20",
+    "departure": "11:40",
+    "length": 20
+  },
+  {
+    "id": "3",
+    "arrive": "11:20",
+    "departure": "11:40",
+    "length": 20
+  }
+]
