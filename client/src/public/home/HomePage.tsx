@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, Typography, makeStyles, Theme, createStyles } from '@material-ui/core';
 import { NavLink } from '../components/NavLink';
+import { useSession } from '../../Session';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -33,6 +34,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export function HomePage() {
   const classes = useStyles();
+  const [session] = useSession();
 
   return (
     <div>
@@ -58,6 +60,15 @@ export function HomePage() {
             label={'Zadať počet čakajúcich'}
             description={'Čakám v rade'}
           />
+          {session.favorites && session.favorites.length !== 0 && (
+            <NavLink
+              to={`/favorites/${session.favorites
+                .map(it => it.county + ':' + it.entryId)
+                .join(',')}`}
+              label={'Moje uložené odberné miesta'}
+              description={'Chcem poznať stav'}
+            />
+          )}
         </div>
       </div>
       <Typography variant={'h6'}>Informácie o testovaní:</Typography>

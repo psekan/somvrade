@@ -4,11 +4,17 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import { makeStyles } from '@material-ui/core/styles';
 import { VariableSizeList, ListChildComponentProps } from 'react-window';
 import { Typography } from '@material-ui/core';
+import SearchIcon from '@material-ui/icons/Search';
+import IconButton from '@material-ui/core/IconButton';
+import classNames from 'classnames';
 import { CollectionPointEntity, useCollectionPointsPublic } from '../../services';
 
 const useStyles = makeStyles({
   place: {
     fontSize: '0.8rem',
+  },
+  searchIcon: {
+    transform: 'rotate(180deg)',
   },
 });
 
@@ -67,6 +73,7 @@ export function Places({ county, onChange, selected, label, size, className }: P
         setInputValue(searchValue);
         setOpen(true);
       }}
+      popupIcon={<SearchIcon className={classNames(isOpen && classes.searchIcon)} />}
       getOptionLabel={option => getTextForSearchInput(option)}
       ListboxComponent={ListboxComponent as React.ComponentType<React.HTMLAttributes<HTMLElement>>}
       renderOption={option => (
