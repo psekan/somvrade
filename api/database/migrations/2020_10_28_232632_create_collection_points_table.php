@@ -15,11 +15,12 @@ class CreateCollectionPointsTable extends Migration
     {
         Schema::create('collection_points', function (Blueprint $table) {
             $table->id();
+            $table->string('code', 10)->nullable();
+            $table->string('region', 4)->index('region');
             $table->string('county', 60)->index('county');
             $table->string('city', 60)->index('city');
-            $table->string('district', 60)->index('district');
-            $table->string('place', 150)->index('place');
-            $table->boolean('active')->default(false)->index('active');
+            $table->string('address', 150)->index('address');
+            $table->boolean('unoccupied')->default(false);
             $table->timestamps();
         });
     }

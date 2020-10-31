@@ -8,7 +8,8 @@ use Illuminate\Contracts\Cache\Repository as Cache;
 
 class CollectionPointsController extends Controller
 {
-    const CACHE_KEY = 'places';
+    const CACHE_KEY = 'cp';
+    const REGIONS = ['BA', 'TT', 'TN', 'NR', 'ZA', 'BB', 'PO', 'KE'];
 
     /**
      * The cache instance.
@@ -20,51 +21,64 @@ class CollectionPointsController extends Controller
         $this->cache = $cache;
     }
 
-    public function refreshCache() {
-        $places = CollectionPoints::query()
-            ->where('active', true)
+    public function refreshCache($region) {
+        if (!in_array($region, self::REGIONS)){
+            return [];
+        }
+        $collectionPoint = CollectionPoints::query()
+            ->where('region', $region)
             ->orderBy('county')
             ->orderBy('city')
-            ->orderBy('district')
-            ->orderBy('place')
-            ->get()->makeHidden('active');
-        $this->cache->set(self::CACHE_KEY, $places);
-        return $places;
+            ->orderBy('address')
+            ->get();
+        $this->cache->set(self::CACHE_KEY.$region, $collectionPoint);
+        return $collectionPoint;
     }
 
-    public function showAll()
+    public function showAll(Request $request)
     {
         if (auth()->check()) {
             return response()->json(CollectionPoints::query()
-                ->where('active', true)
                 ->orderBy('county')
                 ->orderBy('city')
-                ->orderBy('district')
-                ->orderBy('place')
+                ->orderBy('address')
                 ->get());
         }
 
-        if (!$this->cache->has(self::CACHE_KEY)) {
-            $places = $this->refreshCache();
+        $region = strtoupper($request->get('region'));
+        if (!in_array($region, self::REGIONS)){
+            $region = '';
+        }
+        if (!$this->cache->has(self::CACHE_KEY.$region)) {
+            $collectionPoint = $this->refreshCache($region);
         }
         else {
-            $places = $this->cache->get(self::CACHE_KEY);
+            $collectionPoint = $this->cache->get(self::CACHE_KEY.$region);
         }
-        return response()->json($places);
+        return response()->json($collectionPoint);
     }
 
     public function showAllWaiting()
     {
         return response()->json(CollectionPoints::query()
             ->where('active', false)
-            ->orderBy('created_at')
+            ->orderBy('county')
+            ->orderBy('city')
+            ->orderBy('district')
+            ->orderBy('place')
             ->get());
     }
 
     public function create(Request $request)
     {
-        $Place = CollectionPoints::query()->create($request->all());
-        return response()->json($Place, 201);
+        $this->validate($request, [
+            'county' => 'required',
+            'city' => 'required',
+            'address' => 'required',
+            'unoccupied' => 'required'
+        ]);
+        $collectionPoint = CollectionPoints::query()->create($request->merge(['active' => false])->all());
+        return response()->json($collectionPoint, 201);
     }
 
     public function showOne($id)
@@ -74,16 +88,17 @@ class CollectionPointsController extends Controller
 
     public function update($id, Request $request)
     {
-        $author = CollectionPoints::query()->findOrFail($id);
-        $author->update($request->all());
-        $this->refreshCache();
-        return response()->json($author, 200);
+        $collectionPoint = CollectionPoints::query()->findOrFail($id);
+        $collectionPoint->update($request->all());
+        $this->refreshCache($collectionPoint->region);
+        return response()->json($collectionPoint, 200);
     }
 
     public function delete($id)
     {
-        CollectionPoints::query()->findOrFail($id)->delete();
-        $this->refreshCache();
-        return response('Deleted Successfully', 200);
+        $collectionPoint = CollectionPoints::query()->findOrFail($id);
+        $this->refreshCache($collectionPoint->region);
+        $collectionPoint->delete();
+        return response()->json(['message' => 'Deleted Successfully.'], 200);
     }
 }
