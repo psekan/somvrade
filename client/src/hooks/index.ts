@@ -7,6 +7,10 @@ export function useFetch<T>(url: string, options?: RequestInit, cacheTime?: numb
   const [isLoading, setLoading] = useState(true);
   const mounted = useRef(true);
 
+  useEffect(() => {
+    ref.current = { url, options, fetchData };
+  });
+
   const fetchData = async () => {
     try {
       setLoading(true);
@@ -34,10 +38,6 @@ export function useFetch<T>(url: string, options?: RequestInit, cacheTime?: numb
   useEffect(() => {
     ref.current.fetchData();
   }, [ref, url]);
-
-  useEffect(() => {
-    ref.current = { url, options, fetchData };
-  });
 
   return { isLoading, response, error, refresh: fetchData };
 }
