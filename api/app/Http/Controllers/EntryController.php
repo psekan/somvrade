@@ -74,6 +74,10 @@ class EntryController extends Controller
             'departure' => 'required'
         ]);
 
+        if (strtotime($request->get('departure')) > time()) {
+            return response()->json(['message' => 'Bad request'], 401);
+        }
+
         $entry = Entry::query()->findOrFail($eid);
         if ($entry->token != $request->get('token')) {
             return response()->json(['message' => 'Unauthorized'], 401);
