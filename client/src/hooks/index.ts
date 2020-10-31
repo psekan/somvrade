@@ -14,7 +14,6 @@ export function useFetch<T>(url: string, options?: RequestInit, cacheTime?: numb
   const fetchData = async () => {
     try {
       setLoading(true);
-      console.log('fetch', ref.current.url);
       const res = await fetchJson(ref.current.url, ref.current.options, cacheTime);
       if (mounted.current) {
         setResponse(res);
