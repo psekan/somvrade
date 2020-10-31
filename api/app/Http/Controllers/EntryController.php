@@ -47,20 +47,11 @@ class EntryController extends Controller
 
     public function create($id, Request $request)
     {
-        try {
-            $this->validate($request, [
-                'arrive' => 'required',
-                'length' => 'required',
-                'recaptcha' => 'required'
-            ]);
-        }
-        catch (\Throwable $ex) {
-            Log::error($request->getContentType());
-            Log::error($request->getContent());
-            Log::error($ex->getMessage());
-            Log::error($ex->getTraceAsString());
-            throw $ex;
-        }
+        $this->validate($request, [
+            'arrive' => 'required',
+            'length' => 'required',
+            'recaptcha' => 'required'
+        ]);
 
         if ($this->verifyCaptcha($request->get('recaptcha'),$request->ip()) != true) {
             return response()->json(['message' => 'Unauthorized'], 401);
