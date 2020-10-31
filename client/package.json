@@ -54,5 +54,5 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "https://www.somvrade.sk"
+  "proxy": "http://localhost:3000"
 }

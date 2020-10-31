@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import PlaceIcon from '@material-ui/icons/Place';
 import { Typography, makeStyles, Grid } from '@material-ui/core';
@@ -39,7 +39,7 @@ const useStyles = makeStyles({
   },
   fullWidth: {
     width: '100%',
-  }
+  },
 });
 
 export function PlaceRegister() {
@@ -105,20 +105,35 @@ function RegisterPlace({ id, county }: { id: string; county: string }) {
   const [, sessionActions] = useSession();
   const [selectedDate, handleDateChange] = React.useState<Date | null>(new Date());
 
+  const onCaptchaVerify = useCallback((token: string) => {
+    setRecaptchaToken(token);
+  }, []);
+
   async function handleFormSubmit(evt: React.FormEvent) {
     evt.preventDefault();
-    setIsRegistering(true);
     setRegisterError('');
     const form = evt.target as any;
-    const arrivetime = selectedDate ? selectedDate.getHours()+":"+selectedDate.getMinutes() : '';
+    const arrivetime = selectedDate
+      ? selectedDate.getHours() + ':' + selectedDate.getMinutes()
+      : '';
     const waitingnumber = form.waitingnumber.value;
+    if (!arrivetime || !waitingnumber) {
+      setRegisterError('Všetky údaje sú povinné');
+      return;
+    }
     try {
+      setIsRegistering(true);
       const response = await registerToCollectionPoint(id, {
         arrive: arrivetime,
         length: waitingnumber,
-        recaptcha: recaptchaToken
+        recaptcha: recaptchaToken,
       });
-      sessionActions.registerToCollectionPoint(response.token, String(response.id), String(response.collection_point_id), county);
+      sessionActions.registerToCollectionPoint(
+        response.token,
+        String(response.id),
+        String(response.collection_point_id),
+        county,
+      );
     } catch {
       setIsRegistering(false);
       setRegisterError('Chyba pri registracii, skuste znova neskor.');
@@ -133,7 +148,7 @@ function RegisterPlace({ id, county }: { id: string; county: string }) {
       <Typography variant={'h6'}>Zadať počet cakajúcich</Typography>
       <form onSubmit={handleFormSubmit}>
         <div className={classes.formFields}>
-          <GoogleReCaptcha onVerify={(token: string) => { setRecaptchaToken(token); }}/>
+          <GoogleReCaptcha onVerify={onCaptchaVerify} />
           <Grid container justify="center" spacing={2}>
             <Grid item md={4} xs={6}>
               <TimePicker
@@ -179,14 +194,14 @@ function RegisterPlace({ id, county }: { id: string; county: string }) {
           {/*  }}*/}
           {/*/>*/}
         </div>
-        {isRegistering && <LinearProgress />}
+        {(isRegistering || !recaptchaToken) && <LinearProgress />}
         {registerError && <Alert severity={'error'}>{registerError}</Alert>}
         <Button
           type={'submit'}
           variant={'contained'}
           color={'primary'}
           fullWidth
-          disabled={isRegistering}
+          disabled={isRegistering || !recaptchaToken}
         >
           Odoslať
         </Button>
@@ -203,18 +218,26 @@ function UpdateDeparture() {
   const [session, sessionActions] = useSession();
   const [selectedDate, handleDateChange] = React.useState<Date | null>(new Date());
 
+  const onCaptchaVerify = useCallback((token: string) => {
+    setRecaptchaToken(token);
+  }, []);
+
   async function handleFormSubmit(evt: React.FormEvent) {
     evt.preventDefault();
     setIsRegistering(true);
     setRegisterError('');
     // const form = evt.target as any;
-    const departure = selectedDate ? selectedDate.getHours()+":"+selectedDate.getMinutes() : '';
+    const departure = selectedDate ? selectedDate.getHours() + ':' + selectedDate.getMinutes() : '';
+    if (!departure) {
+      setRegisterError('Všetky údaje sú povinné');
+      return;
+    }
     try {
       await updateDeparture(
         session.registeredToken?.token || '',
         session.registeredToken?.entryId || '',
         departure,
-        recaptchaToken
+        recaptchaToken,
       );
       sessionActions.completeCollectionPoint();
     } catch {
@@ -234,7 +257,7 @@ function UpdateDeparture() {
       </Alert>
       <form onSubmit={handleFormSubmit}>
         <div className={classes.formFields}>
-          <GoogleReCaptcha onVerify={(token: string) => { setRecaptchaToken(token); }} />
+          <GoogleReCaptcha onVerify={onCaptchaVerify} />
           <Grid container justify="center" spacing={2}>
             <Grid item md={4} xs={6}>
               <TimePicker
@@ -248,14 +271,14 @@ function UpdateDeparture() {
             </Grid>
           </Grid>
         </div>
-        {isRegistering && <LinearProgress />}
+        {(isRegistering || !recaptchaToken) && <LinearProgress />}
         {registerError && <Alert severity={'error'}>{registerError}</Alert>}
         <Button
           type={'submit'}
           variant={'contained'}
           color={'primary'}
           fullWidth
-          disabled={isRegistering}
+          disabled={isRegistering || !recaptchaToken}
         >
           Odoslať
         </Button>
