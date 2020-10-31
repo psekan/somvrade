@@ -3,12 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Models\Entry;
+use Exception;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Cache\Repository as Cache;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
+use Psr\SimpleCache\InvalidArgumentException;
 use ReCaptcha\ReCaptcha;
 
+/**
+ * Class EntryController
+ * @package App\Http\Controllers
+ */
 class EntryController extends Controller
 {
     const CACHE_KEY = 'entries';
@@ -19,11 +28,20 @@ class EntryController extends Controller
      */
     protected $cache;
 
+    /**
+     * EntryController constructor.
+     * @param Cache $cache
+     */
     public function __construct(Cache $cache)
     {
         $this->cache = $cache;
     }
 
+    /**
+     * @param $id
+     * @return Builder[]|Collection
+     * @throws InvalidArgumentException
+     */
     public function refreshCache($id) {
         $entries = Entry::query()
             ->where('collection_point_id', $id)
@@ -34,6 +52,11 @@ class EntryController extends Controller
         return $entries;
     }
 
+    /**
+     * @param $id
+     * @return JsonResponse
+     * @throws InvalidArgumentException
+     */
     public function showAll($id)
     {
         if (!$this->cache->has(self::CACHE_KEY.$id)) {
@@ -45,6 +68,13 @@ class EntryController extends Controller
         return response()->json($entries);
     }
 
+    /**
+     * @param $id
+     * @param Request $request
+     * @return JsonResponse
+     * @throws InvalidArgumentException
+     * @throws ValidationException
+     */
     public function create($id, Request $request)
     {
         $this->validate($request, [
@@ -73,6 +103,13 @@ class EntryController extends Controller
         return response()->json($entry, 201);
     }
 
+    /**
+     * @param $eid
+     * @param Request $request
+     * @return JsonResponse
+     * @throws InvalidArgumentException
+     * @throws ValidationException
+     */
     public function update($eid, Request $request)
     {
         $this->validate($request, [
@@ -97,6 +134,12 @@ class EntryController extends Controller
         return response()->json($entry, 200);
     }
 
+    /**
+     * @param $eid
+     * @param Request $request
+     * @return JsonResponse
+     * @throws InvalidArgumentException
+     */
     public function maskAsMisinformation($eid, Request $request)
     {
         $cacheKey = self::CACHE_MISINFO_KEY.$request->ip();
@@ -121,6 +164,13 @@ class EntryController extends Controller
         return response()->json($entry, 200);
     }
 
+    /**
+     * @param $eid
+     * @param Request $request
+     * @return JsonResponse
+     * @throws InvalidArgumentException
+     * @throws Exception
+     */
     public function delete($eid, Request $request)
     {
         $entry = Entry::query()->findOrFail($eid);
@@ -132,6 +182,11 @@ class EntryController extends Controller
         return response()->json(['message' => 'Deleted Successfully.'], 200);
     }
 
+    /**
+     * @param $token
+     * @param $ip
+     * @return bool
+     */
     private function verifyCaptcha($token, $ip) {
         $secret = env('RECAPTCHA', '');
         $recaptcha = new ReCaptcha($secret);

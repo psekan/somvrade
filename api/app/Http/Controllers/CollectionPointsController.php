@@ -3,9 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Models\CollectionPoints;
+use Exception;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Cache\Repository as Cache;
+use Illuminate\Validation\ValidationException;
+use Psr\SimpleCache\InvalidArgumentException;
 
+/**
+ * Class CollectionPointsController
+ * @package App\Http\Controllers
+ */
 class CollectionPointsController extends Controller
 {
     const CACHE_KEY = 'cp';
@@ -16,11 +26,20 @@ class CollectionPointsController extends Controller
      */
     protected $cache;
 
+    /**
+     * CollectionPointsController constructor.
+     * @param Cache $cache
+     */
     public function __construct(Cache $cache)
     {
         $this->cache = $cache;
     }
 
+    /**
+     * @param $region
+     * @return array|Builder[]|Collection
+     * @throws InvalidArgumentException
+     */
     public function refreshCache($region) {
         if ($region == '') {
             $collectionPoint = CollectionPoints::query()
@@ -44,6 +63,11 @@ class CollectionPointsController extends Controller
         return $collectionPoint;
     }
 
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     * @throws InvalidArgumentException
+     */
     public function showAll(Request $request)
     {
         if (auth()->check()) {
@@ -67,6 +91,9 @@ class CollectionPointsController extends Controller
         return response()->json($collectionPoint);
     }
 
+    /**
+     * @return JsonResponse
+     */
     public function showAllWaiting()
     {
         return response()->json(CollectionPoints::query()
@@ -78,6 +105,11 @@ class CollectionPointsController extends Controller
             ->get());
     }
 
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     * @throws ValidationException
+     */
     public function create(Request $request)
     {
         $this->validate($request, [
@@ -90,11 +122,21 @@ class CollectionPointsController extends Controller
         return response()->json($collectionPoint, 201);
     }
 
+    /**
+     * @param $id
+     * @return JsonResponse
+     */
     public function showOne($id)
     {
         return response()->json(CollectionPoints::query()->findOrFail($id));
     }
 
+    /**
+     * @param $id
+     * @param Request $request
+     * @return JsonResponse
+     * @throws InvalidArgumentException
+     */
     public function update($id, Request $request)
     {
         $collectionPoint = CollectionPoints::query()->findOrFail($id);
@@ -103,11 +145,17 @@ class CollectionPointsController extends Controller
         return response()->json($collectionPoint, 200);
     }
 
+    /**
+     * @param $id
+     * @return JsonResponse
+     * @throws InvalidArgumentException
+     * @throws Exception
+     */
     public function delete($id)
     {
         $collectionPoint = CollectionPoints::query()->findOrFail($id);
-        $this->refreshCache($collectionPoint->region);
         $collectionPoint->delete();
+        $this->refreshCache($collectionPoint->region);
         return response()->json(['message' => 'Deleted Successfully.'], 200);
     }
 }
