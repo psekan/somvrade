@@ -22,6 +22,15 @@ class CollectionPointsController extends Controller
     }
 
     public function refreshCache($region) {
+        if ($region == '') {
+            $collectionPoint = CollectionPoints::query()
+                ->orderBy('county')
+                ->orderBy('city')
+                ->orderBy('address')
+                ->get();
+            $this->cache->set(self::CACHE_KEY, $collectionPoint);
+            return $collectionPoint;
+        }
         if (!in_array($region, self::REGIONS)){
             return [];
         }
