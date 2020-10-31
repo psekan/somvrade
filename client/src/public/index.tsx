@@ -4,6 +4,7 @@ import { Container } from './components/Container';
 import { HomePage } from './home/HomePage';
 import { CheckWaiting, PlaceDetail as CheckWaitingPlaceDetail } from './checkwaiting';
 import { SetWaiting, PlaceRegister } from './setwaiting';
+import { NotFound } from './notfound';
 
 export function Public() {
   return (
@@ -32,6 +33,9 @@ export function Public() {
         </Route>
         <Route path="/zadat-pocet-cakajucich/:county/:id/register" exact>
           <PlaceRegister />
+        </Route>
+        <Route default>
+          <NotFound />
         </Route>
       </Switch>
     </Container>
