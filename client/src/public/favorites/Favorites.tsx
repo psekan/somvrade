@@ -41,6 +41,7 @@ export function Favorites() {
     }
 
     nextRender.current = true;
+    // eslint-disable-next-line
   }, [session]);
 
   const favorites = pairs

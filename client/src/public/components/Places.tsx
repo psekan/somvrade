@@ -5,7 +5,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import { VariableSizeList, ListChildComponentProps } from 'react-window';
 import { Typography } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
-import IconButton from '@material-ui/core/IconButton';
 import classNames from 'classnames';
 import { CollectionPointEntity, useCollectionPointsPublic } from '../../services';
 

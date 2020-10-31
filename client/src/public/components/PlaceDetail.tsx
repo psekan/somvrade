@@ -1,5 +1,5 @@
 import React from 'react';
-import { useHistory, useParams, Link as RouterLink } from 'react-router-dom';
+import { useHistory, Link as RouterLink } from 'react-router-dom';
 import PlaceIcon from '@material-ui/icons/Place';
 import { Typography, makeStyles } from '@material-ui/core';
 import LinearProgress from '@material-ui/core/LinearProgress';
