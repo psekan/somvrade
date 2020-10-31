@@ -53,7 +53,7 @@ export function PlaceRegister() {
     <LinearProgress />
   ) : (
     <>
-      {!detail && !error && <Alert severity={'warning'}>Miesto nenajdene</Alert>}
+      {!detail && !error && <Alert severity={'warning'}>Odberné miesto nenájdené</Alert>}
       {error && (
         <Alert
           severity={'error'}
@@ -134,9 +134,11 @@ function RegisterPlace({ id, county }: { id: string; county: string }) {
         String(response.collection_point_id),
         county,
       );
-    } catch {
+    } catch (err) {
       setIsRegistering(false);
-      setRegisterError('Chyba pri registracii, skuste znova neskor.');
+      setRegisterError(
+        err && err.message ? err.message : 'Chyba pri odosielaní dát, skúste znova neskôr.',
+      );
     }
   }
   return (
@@ -170,29 +172,6 @@ function RegisterPlace({ id, county }: { id: string; county: string }) {
               />
             </Grid>
           </Grid>
-          {/*<TextField*/}
-          {/*  label={'Čas príchodu'}*/}
-          {/*  type={'time'}*/}
-          {/*  name={'arrivetime'}*/}
-          {/*  defaultValue="07:30"*/}
-          {/*  className={classes.timePicker}*/}
-          {/*  InputLabelProps={{*/}
-          {/*    shrink: true,*/}
-          {/*  }}*/}
-          {/*  inputProps={{*/}
-          {/*    step: 300, // 5 min*/}
-          {/*  }}*/}
-          {/*/>*/}
-          {/*<TextField*/}
-          {/*  label={'Počet čakajúcich pred vami'}*/}
-          {/*  type={'number'}*/}
-          {/*  name={'waitingnumber'}*/}
-          {/*  className={classes.waitingPeople}*/}
-          {/*  inputProps={{*/}
-          {/*    min: 0,*/}
-          {/*    max: 500,*/}
-          {/*  }}*/}
-          {/*/>*/}
         </div>
         {(isRegistering || !recaptchaToken) && <LinearProgress />}
         {registerError && <Alert severity={'error'}>{registerError}</Alert>}
@@ -226,7 +205,6 @@ function UpdateDeparture() {
     evt.preventDefault();
     setIsRegistering(true);
     setRegisterError('');
-    // const form = evt.target as any;
     const departure = selectedDate ? selectedDate.getHours() + ':' + selectedDate.getMinutes() : '';
     if (!departure) {
       setRegisterError('Všetky údaje sú povinné');
@@ -240,16 +218,15 @@ function UpdateDeparture() {
         recaptchaToken,
       );
       sessionActions.completeCollectionPoint();
-    } catch {
+    } catch (err) {
       setIsRegistering(false);
-      setRegisterError('Chyba pri odosielani dat, skuste znova neskor.');
+      setRegisterError(
+        err && err.message ? err.message : 'Chyba pri odosielaní dát, skúste znova neskôr.',
+      );
     }
   }
   return (
     <>
-      {/*<Typography variant={'subtitle2'} gutterBottom>*/}
-      {/*  Zadať čas odchodu*/}
-      {/*</Typography>*/}
       <Typography variant={'h6'}>Zadajte čas vášho odchodu</Typography>
       <Alert severity={'info'}>
         Údaje o Vašom príchode boli uložené. Nechajte si túto stránku otvorenú a keď dostanete

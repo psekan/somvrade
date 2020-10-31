@@ -33,7 +33,7 @@ export function Header({ compact }: { compact: boolean }) {
   const classes = useStyles();
   const [session] = useSession();
   return (
-    <div className={classNames(classes.margin/*, compact && classes.compact*/)}>
+    <div className={classNames(classes.margin /*, compact && classes.compact*/)}>
       <Link to={'/'} className={classes.headingLink}>
         <Typography variant="h1">Som v rade</Typography>
       </Link>
@@ -47,14 +47,11 @@ export function Header({ compact }: { compact: boolean }) {
           variant="extended"
           color="primary"
           className={classes.fab}
-          href={`/zadat-pocet-cakajucich/${session.registeredToken?.county}/${session.registeredToken?.collectionPointId}/register`}>
-          <NavigationIcon/>
+          href={`/zadat-pocet-cakajucich/${session.registeredToken?.county}/${session.registeredToken?.collectionPointId}/register`}
+        >
+          <NavigationIcon />
           Moje odberné miesto
         </Fab>
-        // <TextLink
-        //   to={`/zadat-pocet-cakajucich/${session.registeredToken?.county}/${session.registeredToken?.collectionPointId}/register`}
-        //   text={'Moje odberné miesto'}
-        // />
       )}
     </div>
   );
