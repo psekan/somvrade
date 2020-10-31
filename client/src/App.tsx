@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
-import { HomePage } from './public';
+import { Public } from './public';
 import { Admin } from './admin';
 
 export default function App() {
@@ -11,7 +11,7 @@ export default function App() {
           <Admin />
         </Route>
         <Route path="/">
-          <HomePage />
+          <Public />
         </Route>
       </Switch>
     </Router>

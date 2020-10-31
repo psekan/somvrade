@@ -15,7 +15,7 @@ export function login(username: string, password: string): Promise<LoginResponse
 
   return fetchJson('/api/login', {
     method: 'POST',
-    body: formData
+    body: formData,
   });
 }
 
@@ -31,7 +31,10 @@ export interface CollectionPointEntity {
 export function useCollectionPoints(onlyWaiting: boolean) {
   const [session] = useSession();
 
-  return useFetch<CollectionPointEntity[]>('/api/collectionpoints' + (onlyWaiting ? '/waiting' : ''), withSessionHeaders(session));
+  return useFetch<CollectionPointEntity[]>(
+    '/api/collectionpoints' + (onlyWaiting ? '/waiting' : ''),
+    withSessionHeaders(session),
+  );
 }
 
 export async function deleteCollectionPoint(id: string, session: Session): Promise<LoginResponse> {
@@ -41,7 +44,10 @@ export async function deleteCollectionPoint(id: string, session: Session): Promi
   });
 }
 
-export async function approveCollectionPoint(entity: CollectionPointEntity, session: Session): Promise<LoginResponse> {
+export async function approveCollectionPoint(
+  entity: CollectionPointEntity,
+  session: Session,
+): Promise<LoginResponse> {
   entity.active = !entity.active;
   return fetchJson(`/api/collectionpoints/${entity.id}`, {
     method: 'PUT',
@@ -66,7 +72,58 @@ function withSessionHeaders(session: Session) {
     headers: {
       Authorization: `${session.token?.tokenType} ${session.token?.accessToken}`,
       Accept: 'application/json',
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
     },
   };
+}
+
+export function useCollectionPointsPublic(county: string) {
+  return useFetch<CollectionPointEntity[]>(
+    `/api/collectionpoints?region=${county}`,
+    undefined,
+    900,
+  );
+}
+
+interface CollectionPointEntry {
+  id: string;
+  arrive: string;
+  departure: string;
+  token: string;
+  length: number;
+}
+
+export function useCollectionPointEntries(id: string) {
+  // return useFetch<CollectionPointEntry[]>(`/api/collectionpoints/${id}/entries`); // FIXME
+  return useFetch<CollectionPointEntry[]>(`/mock/entries.json`);
+}
+
+export interface RegisterToCollectionPointRequest {
+  arrive: string;
+  length: number;
+}
+
+export interface RegisterToCollectionPointResponse {
+  arrive: string;
+  length: number;
+  collection_point_id: string;
+  token: string;
+  id: number;
+}
+
+export async function registerToCollectionPoint(
+  collectionPointId: string,
+  entity: RegisterToCollectionPointRequest,
+): Promise<RegisterToCollectionPointResponse> {
+  return fetchJson(`/api/collectionpoints/${collectionPointId}/entries`, {
+    method: 'POST',
+    body: JSON.stringify(entity),
+  });
+}
+
+export async function updateDeparture(token: string, id: string, departure: string): Promise<any> {
+  return fetchJson(`/api/entries/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify({ token, departure }),
+  });
 }
