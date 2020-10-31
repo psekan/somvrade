@@ -6,12 +6,14 @@ const defaultSession: Session = {
 
 const STORAGE_KEY = '@somvrade';
 const STORAGE_KEY_COL_POINT_TOKEN = '@somvrade_cl_p_token';
+const STORAGE_KEY_FAVORITES = '@somvrade_favorites';
 
 const initialActions: SessionContextActions = {
   initSecureSession: () => null,
   destroySession: () => null,
   registerToCollectionPoint: () => null,
   completeCollectionPoint: () => null,
+  setFavorite: () => null,
 };
 
 export interface Session {
@@ -25,6 +27,7 @@ export interface Session {
     county: string;
     completed: boolean;
   };
+  favorites?: Array<{ county: string; entryId: string }>;
 }
 
 type SessionContextType = [Session, SessionContextActions];
@@ -37,9 +40,15 @@ export interface Token {
 
 interface SessionContextActions {
   initSecureSession: (token: Token) => void;
-  registerToCollectionPoint: (token: string, entityId: string, collectionPointId: string, county: string) => void;
+  registerToCollectionPoint: (
+    token: string,
+    entityId: string,
+    collectionPointId: string,
+    county: string,
+  ) => void;
   completeCollectionPoint: () => void;
   destroySession: () => void;
+  setFavorite: (county: string, entryId: string) => void;
 }
 
 const SessionContext = React.createContext<SessionContextType>([defaultSession, initialActions]);
@@ -65,7 +74,7 @@ export function SessionContextProvider({ children }: React.PropsWithChildren<{}>
             entryId,
             collectionPointId,
             completed: false,
-            county
+            county,
           };
           localStorage.setItem(STORAGE_KEY_COL_POINT_TOKEN, JSON.stringify(registeredObj));
           setState({ ...state, isRegistered: true, registeredToken: registeredObj });
@@ -77,6 +86,19 @@ export function SessionContextProvider({ children }: React.PropsWithChildren<{}>
             ...state,
             isRegistered: true,
             registeredToken: newRegistrationToken as any,
+          });
+        },
+        setFavorite: (county, entryId) => {
+          const exists = state.favorites?.some(
+            it => it.county === county && it.entryId === entryId,
+          );
+          const newState = exists
+            ? state.favorites?.filter(it => it.county !== county || it.entryId !== entryId)
+            : [...(state.favorites || []), { county, entryId }];
+          localStorage.setItem(STORAGE_KEY_FAVORITES, JSON.stringify(newState));
+          setState({
+            ...state,
+            favorites: newState,
           });
         },
       },
@@ -108,6 +130,12 @@ function restoreSession(): Session | undefined {
     if (registeredCollectionPointToken) {
       restored.isRegistered = true;
       restored.registeredToken = parsedRegisteredCollectionPointToken;
+    }
+
+    const favoritesFromStorage = localStorage.getItem(STORAGE_KEY_FAVORITES);
+    const parsedFavorites = favoritesFromStorage && JSON.parse(favoritesFromStorage);
+    if (favoritesFromStorage) {
+      restored.favorites = parsedFavorites;
     }
 
     return restored;

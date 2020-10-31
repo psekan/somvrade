@@ -19,28 +19,34 @@ const useStyles = makeStyles({
 interface CollectionEntriesProps {
   collectionPoint: CollectionPointEntity;
   className?: string;
+  limitTable?: number;
 }
 
-export function CollectionEntries({ collectionPoint, className }: CollectionEntriesProps) {
+export function CollectionEntries({
+  collectionPoint,
+  className,
+  limitTable,
+}: CollectionEntriesProps) {
   const classes = useStyles();
   const { response, isLoading } = useCollectionPointEntries(collectionPoint.id);
+  let data = limitTable ? response?.slice(0, limitTable) : response;
   return (
     <TableContainer component={Paper} className={className}>
       {isLoading && <LinearProgress />}
       <Table size={'small'}>
         <TableHead>
           <TableRow>
-            <TableCell className={classes.headerCell}>Navstevnik prisiel o:</TableCell>
+            <TableCell className={classes.headerCell}>Návštevník prišiel o:</TableCell>
             <TableCell align={'center'} className={classes.headerCell}>
-              Pocet osob pred nim:
+              Počet osôb pred ním:
             </TableCell>
             <TableCell align={'right'} className={classes.headerCell}>
-              Navstevnik odisiel o:
+              Návštevník odišiel o:
             </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {(response || []).map(row => (
+          {(data || []).map(row => (
             <TableRow key={row.id}>
               <TableCell component="th" scope="row">
                 {row.arrive}

@@ -1,2 +1,2 @@
 export { CheckWaiting } from './CheckWaiting';
-export { PlaceDetail } from './PlaceDetail';
+export { PlaceDetailPage } from './PlaceDetail';

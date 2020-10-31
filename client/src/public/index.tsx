@@ -2,8 +2,9 @@ import React from 'react';
 import { Switch, Route, Redirect } from 'react-router-dom';
 import { Container } from './components/Container';
 import { HomePage } from './home/HomePage';
-import { CheckWaiting, PlaceDetail as CheckWaitingPlaceDetail } from './checkwaiting';
+import { CheckWaiting, PlaceDetailPage as CheckWaitingPlaceDetail } from './checkwaiting';
 import { SetWaiting, PlaceRegister } from './setwaiting';
+import { Favorites } from './favorites';
 import { NotFound } from './notfound';
 
 export function Public() {
@@ -33,6 +34,9 @@ export function Public() {
         </Route>
         <Route path="/zadat-pocet-cakajucich/:county/:id/register" exact>
           <PlaceRegister />
+        </Route>
+        <Route path={['/favorites/:ids', '/favorites']} exact>
+          <Favorites />
         </Route>
         <Redirect exact path={'//'} to={'/'} />
         <Route default>
