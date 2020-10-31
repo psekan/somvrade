@@ -5,7 +5,7 @@ import { NavLink } from '../components/NavLink';
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     options: {
-      background: theme.palette.action.hover,
+      // background: theme.palette.action.hover,
       margin: '20px -26px',
       padding: '20px 20px 40px',
     },
@@ -18,10 +18,10 @@ const useStyles = makeStyles((theme: Theme) =>
       margin: '0 -5px',
     },
     video: {
-      maxWidth: 500,
-      width: '100%',
+      maxWidth: 700,
+      width: '95%',
       margin: '20px auto',
-      height: 180,
+      height: '50vh',
       display: 'block',
     },
     bottomInfo: {

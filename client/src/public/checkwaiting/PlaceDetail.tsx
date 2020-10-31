@@ -67,7 +67,7 @@ export function PlaceDetail() {
             onChange={entity => history.push(`/aktualne-pocty-cakajucich/${county}/${entity.id}`)}
           />
           <Typography variant={'subtitle1'} gutterBottom className={classes.placeTitle}>
-            <PlaceIcon fontSize={'small'} /> {detail.place}
+            <PlaceIcon fontSize={'small'} /> {detail.address}
           </Typography>
           <CollectionEntries collectionPoint={detail} className={classes.table} />
           {!session.isRegistered && (

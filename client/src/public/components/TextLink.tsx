@@ -6,7 +6,7 @@ import classNames from 'classnames';
 const useStyles = makeStyles(theme => ({
   link: {
     display: 'block',
-    marginTop: 40,
+    marginTop: 20,
     color: theme.palette.primary.main,
   },
   center: {

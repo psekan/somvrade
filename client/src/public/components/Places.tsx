@@ -40,13 +40,13 @@ export function Places({ county, onChange, selected, label, size, className }: P
           onChange(value);
         }
       }}
-      getOptionLabel={option => `${option.city}, ${modifyPlace(option.place, option.city)}`}
+      getOptionLabel={option => `${option.city}, ${modifyPlace(option.address, option.city)}`}
       ListboxComponent={ListboxComponent as React.ComponentType<React.HTMLAttributes<HTMLElement>>}
       renderOption={option => (
         <div>
           <Typography noWrap>{option.city}</Typography>
           <Typography className={classes.place}>
-            {modifyPlace(option.place, option.city)}
+            {modifyPlace(option.address, option.city)}
           </Typography>
         </div>
       )}

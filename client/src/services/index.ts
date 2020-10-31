@@ -24,7 +24,7 @@ export interface CollectionPointEntity {
   county: string;
   city: string;
   district: string;
-  place: string;
+  address: string;
   active: boolean;
 }
 
@@ -94,13 +94,14 @@ interface CollectionPointEntry {
 }
 
 export function useCollectionPointEntries(id: string) {
-  // return useFetch<CollectionPointEntry[]>(`/api/collectionpoints/${id}/entries`); // FIXME
-  return useFetch<CollectionPointEntry[]>(`/mock/entries.json`);
+  return useFetch<CollectionPointEntry[]>(`/api/collectionpoints/${id}/entries`);
+  // return useFetch<CollectionPointEntry[]>(`/mock/entries.json`);
 }
 
 export interface RegisterToCollectionPointRequest {
   arrive: string;
   length: number;
+  recaptcha: string;
 }
 
 export interface RegisterToCollectionPointResponse {
@@ -118,12 +119,20 @@ export async function registerToCollectionPoint(
   return fetchJson(`/api/collectionpoints/${collectionPointId}/entries`, {
     method: 'POST',
     body: JSON.stringify(entity),
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
   });
 }
 
-export async function updateDeparture(token: string, id: string, departure: string): Promise<any> {
+export async function updateDeparture(token: string, id: string, departure: string, recaptchaToken: string): Promise<any> {
   return fetchJson(`/api/entries/${id}`, {
     method: 'PUT',
-    body: JSON.stringify({ token, departure }),
+    body: JSON.stringify({ token, departure, recaptcha: recaptchaToken }),
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
   });
 }

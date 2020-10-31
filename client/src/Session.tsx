@@ -21,6 +21,7 @@ export interface Session {
   registeredToken?: {
     token: string;
     entryId: string;
+    collectionPointId: string;
     county: string;
     completed: boolean;
   };
@@ -36,7 +37,7 @@ export interface Token {
 
 interface SessionContextActions {
   initSecureSession: (token: Token) => void;
-  registerToCollectionPoint: (token: string, entityId: string, county: string) => void;
+  registerToCollectionPoint: (token: string, entityId: string, collectionPointId: string, county: string) => void;
   completeCollectionPoint: () => void;
   destroySession: () => void;
 }
@@ -58,12 +59,13 @@ export function SessionContextProvider({ children }: React.PropsWithChildren<{}>
           sessionStorage.removeItem(STORAGE_KEY);
           setState({ ...defaultSession });
         },
-        registerToCollectionPoint: (token, entryId, county) => {
+        registerToCollectionPoint: (token, entryId, collectionPointId, county) => {
           const registeredObj = {
             token,
             entryId,
+            collectionPointId,
             completed: false,
-            county,
+            county
           };
           localStorage.setItem(STORAGE_KEY_COL_POINT_TOKEN, JSON.stringify(registeredObj));
           setState({ ...state, isRegistered: true, registeredToken: registeredObj });

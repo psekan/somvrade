@@ -19,7 +19,7 @@ const theme = createMuiTheme({
   typography: {
     h1: {
       fontSize: '3rem',
-      fontWeight: 400,
+      // fontWeight: 400,
       color: primaryColor,
     },
     subtitle1: {

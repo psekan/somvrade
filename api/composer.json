@@ -6,10 +6,11 @@
     "type": "project",
     "require": {
         "php": "^7.3",
+        "ext-json": "*",
+        "ext-openssl": "*",
+        "google/recaptcha": "^1.2",
         "laravel/lumen-framework": "^8.0",
-        "tymon/jwt-auth": "^1.0",
-      "ext-openssl": "*",
-      "ext-json": "*"
+        "tymon/jwt-auth": "^1.0"
     },
     "require-dev": {
         "fzaninotto/faker": "^1.9.1",

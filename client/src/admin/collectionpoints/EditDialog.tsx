@@ -78,7 +78,7 @@ export function EditDialog({
   return (
     <Dialog open={!!entity} onClose={onCancel} aria-labelledby="form-dialog-title">
       <DialogTitle id="form-dialog-title">
-        Odberné miesto <i>{state?.place}</i>
+        Odberné miesto <i>{state?.address}</i>
       </DialogTitle>
       <DialogContent>
         <TextField
@@ -106,7 +106,7 @@ export function EditDialog({
           {...commonInputProps}
           name={'place'}
           label="Názov odberného miesta"
-          value={state?.place || ''}
+          value={state?.address || ''}
           onChange={handleInputChange}
         />
         <FormControlLabel

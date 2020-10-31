@@ -26,8 +26,7 @@ class Entry extends Model
         'created_at',
         'updated_at',
         'ipaddress',
-        'misinformation',
-        'collection_point_id'
+        'misinformation'
     ];
 
     public function getMisinfoCountAttribute() {

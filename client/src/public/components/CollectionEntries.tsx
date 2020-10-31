@@ -53,6 +53,13 @@ export function CollectionEntries({ collectionPoint, className }: CollectionEntr
               </TableCell>
             </TableRow>
           ))}
+          {(response || []).length === 0 && (
+            <TableRow>
+              <TableCell component="th" scope="row" colSpan={3} align="center">
+                O tomto odbernom mieste zatiaľ nemáme žiadne informácie.
+              </TableCell>
+            </TableRow>
+          )}
         </TableBody>
       </Table>
     </TableContainer>

@@ -7,17 +7,20 @@ import DateFnsUtils from '@date-io/date-fns';
 import App from './App';
 import theme from './theme';
 import { SessionContextProvider } from './Session';
+import { GoogleReCaptchaProvider } from 'react-google-recaptcha-v3';
 
 ReactDOM.render(
   <React.StrictMode>
     <CssBaseline />
     <ThemeProvider theme={theme}>
       <MuiPickersUtilsProvider utils={DateFnsUtils}>
-        <SessionContextProvider>
-          <Container maxWidth="md">
-            <App />
-          </Container>
-        </SessionContextProvider>
+        <GoogleReCaptchaProvider reCaptchaKey="6LeSbN0ZAAAAAPl65jiQdVBf8DK_qO2pA72oEJj-">
+          <SessionContextProvider>
+            <Container maxWidth="md">
+              <App />
+            </Container>
+          </SessionContextProvider>
+        </GoogleReCaptchaProvider>
       </MuiPickersUtilsProvider>
     </ThemeProvider>
   </React.StrictMode>,

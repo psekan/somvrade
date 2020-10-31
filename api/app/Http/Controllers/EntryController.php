@@ -6,6 +6,7 @@ use App\Models\Entry;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Cache\Repository as Cache;
 use Illuminate\Support\Carbon;
+use ReCaptcha\ReCaptcha;
 
 class EntryController extends Controller
 {
@@ -28,7 +29,7 @@ class EntryController extends Controller
             ->where('arrive','<=', date('h:i:s'))
             ->orderBy('arrive', 'desc')
             ->limit(30)
-            ->get()->makeHidden('token');
+            ->get()->makeHidden(['token', 'collection_point_id']);
         $this->cache->set(self::CACHE_KEY.$id, $entries);
         return $entries;
     }
@@ -48,9 +49,13 @@ class EntryController extends Controller
     {
         $this->validate($request, [
             'arrive' => 'required',
-            'length' => 'required'
+            'length' => 'required',
+            'recaptcha' => 'required'
         ]);
 
+        if ($this->verifyCaptcha($request->get('recaptcha'),$request->ip()) != true) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
         if (strtotime($request->get('arrive')) > time()) {
             return response()->json(['message' => 'Bad request'], 401);
         }
@@ -71,9 +76,13 @@ class EntryController extends Controller
     {
         $this->validate($request, [
             'token' => 'required',
-            'departure' => 'required'
+            'departure' => 'required',
+            'recaptcha' => 'required',
         ]);
 
+        if ($this->verifyCaptcha($request->get('recaptcha'),$request->ip()) != true) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
         if (strtotime($request->get('departure')) > time()) {
             return response()->json(['message' => 'Bad request'], 401);
         }
@@ -120,5 +129,12 @@ class EntryController extends Controller
         $entry->delete();
         $this->refreshCache($entry->collection_point_id);
         return response()->json(['message' => 'Deleted Successfully.'], 200);
+    }
+
+    private function verifyCaptcha($token, $ip) {
+        $secret = env('RECAPTCHA', '');
+        $recaptcha = new ReCaptcha($secret);
+        $resp = $recaptcha->verify($token, $ip);
+        return $resp->isSuccess();
     }
 }

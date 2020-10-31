@@ -155,7 +155,7 @@ function Row({
         {entity.district}
       </TableCell>
       <TableCell component="th" scope="row">
-        {entity.place}
+        {entity.address}
       </TableCell>
       <TableCell component="th" scope="row">
         {entity.active ? 'Aktívne' : 'Neaktívne'}
