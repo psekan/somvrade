@@ -10,10 +10,16 @@ import FaceOutlinedIcon from '@material-ui/icons/FavoriteBorder';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import PeopleAltOutlinedIcon from '@material-ui/icons/PeopleAltOutlined';
 
-import { useCollectionPointsPublic, useCollectionPointEntries } from '../../services';
+import {
+  useCollectionPointsPublic,
+  useCollectionPointEntries,
+  CollectionPointEntity,
+} from '../../services';
 import { Places } from '../components/Places';
 import { CollectionEntries } from '../components/CollectionEntries';
 import { useSession } from '../../Session';
+
+const MAX_FAVORITES = 5;
 
 const useStyles = makeStyles({
   placeTitle: {
@@ -51,54 +57,67 @@ export function PlaceDetail({ county, id, showSearch, limitTable, className }: P
   const history = useHistory();
   const { isLoading, response, error, refresh } = useCollectionPointsPublic(county);
   const detail = response?.find(it => String(it.id) === id);
-  const data = useCollectionPointEntries(detail ? detail.id : '');
-  const [session, sessionActions] = useSession();
-
-  return isLoading ? (
-    <LinearProgress />
-  ) : (
+  return (
     <div className={className}>
-      {!detail && !error && <Alert severity={'warning'}>Odberné miesto nenájdene</Alert>}
-      {error && (
-        <Alert
-          severity={'error'}
-          action={
-            <Button color="inherit" size="small" onClick={refresh}>
-              Obnoviť
-            </Button>
-          }
-        >
-          Nastala neznáma chyba
-        </Alert>
+      {showSearch && (
+        <Places
+          className={classes.placesSelect}
+          size={'small'}
+          label={'Odberné miesto'}
+          selected={id}
+          county={county}
+          onChange={entity => history.push(`/aktualne-pocty-cakajucich/${county}/${entity.id}`)}
+        />
       )}
-      {detail && (
+      {isLoading && <LinearProgress />}
+      {!isLoading && error && <ErrorHandler refresh={refresh} />}
+      {!detail && !error && !isLoading && (
+        <Alert severity={'warning'}>Odberné miesto nenájdene</Alert>
+      )}
+      {!isLoading && detail && (
+        <PlaceDetailTable
+          county={county}
+          id={id}
+          showSearch={showSearch}
+          limitTable={limitTable}
+          className={className}
+          detail={detail}
+        />
+      )}
+    </div>
+  );
+}
+
+function PlaceDetailTable({
+  detail,
+  county,
+  id,
+  limitTable,
+}: { detail: CollectionPointEntity } & PlaceDetailProps) {
+  const classes = useStyles();
+
+  const [session, sessionActions] = useSession();
+  const { isLoading, response, error, refresh } = useCollectionPointEntries(detail.id);
+  return (
+    <>
+      {!isLoading && error && <ErrorHandler refresh={refresh} />}
+      {isLoading && (
+        <>
+          <PlaceName county={county} id={id} detail={detail} />
+          <LinearProgress />
+        </>
+      )}
+      {!isLoading && (
         <div>
-          {showSearch && (
-            <Places
-              className={classes.placesSelect}
-              size={'small'}
-              label={'Odberné miesto'}
-              selected={id}
-              county={county}
-              onChange={entity => history.push(`/aktualne-pocty-cakajucich/${county}/${entity.id}`)}
-            />
-          )}
           <div className={classes.locationContainer}>
-            <Typography variant={'subtitle1'} gutterBottom className={classes.placeTitle}>
-              <PlaceIcon fontSize={'small'} />{' '}
-              <RouterLink to={`/aktualne-pocty-cakajucich/${county}/${id}`}>
-                {detail.address}
-              </RouterLink>{' '}
-            </Typography>
+            <PlaceName county={county} id={id} detail={detail} />
             <div style={{ textAlign: 'right' }}>
-              {((data && data.response) || []).length > 0 && (
+              {(response || []).length > 0 && (
                 <Tooltip placement="left" arrow title="Priemerne čakajúcich">
                   <Chip
                     variant="outlined"
                     icon={<PeopleAltOutlinedIcon />}
-                    label={
-                      data.response ? median(data.response.map(a => a.length).slice(0, 10)) : ''
-                    }
+                    label={response ? median(response.map(a => a.length).slice(0, 10)) : ''}
                   />
                 </Tooltip>
               )}
@@ -113,8 +132,8 @@ export function PlaceDetail({ county, id, showSearch, limitTable, className }: P
                 <Badge
                   badgeContent={
                     session.favorites && session.favorites.length > 0
-                      ? 5 - session.favorites.length
-                      : 5
+                      ? MAX_FAVORITES - session.favorites.length
+                      : MAX_FAVORITES
                   }
                   color="primary"
                   overlap="circle"
@@ -123,7 +142,7 @@ export function PlaceDetail({ county, id, showSearch, limitTable, className }: P
                     onClick={() => sessionActions.setFavorite(county, id)}
                     title={'Pridať do obľúbených'}
                     color="primary"
-                    disabled={session.favorites ? session.favorites.length >= 5 : false}
+                    disabled={session.favorites ? session.favorites.length >= MAX_FAVORITES : false}
                   >
                     <FaceOutlinedIcon />
                   </IconButton>
@@ -131,12 +150,7 @@ export function PlaceDetail({ county, id, showSearch, limitTable, className }: P
               )}
             </div>
           </div>
-          <CollectionEntries
-            className={classes.table}
-            limitTable={limitTable}
-            isLoading={data ? data.isLoading : true}
-            data={data ? data.response : []}
-          />
+          <CollectionEntries className={classes.table} limitTable={limitTable} data={response} />
           {!session.isRegistered && (
             <Button
               component={RouterLink}
@@ -150,7 +164,40 @@ export function PlaceDetail({ county, id, showSearch, limitTable, className }: P
           )}
         </div>
       )}
-    </div>
+    </>
+  );
+}
+
+function PlaceName({
+  detail,
+  county,
+  id,
+}: {
+  detail: CollectionPointEntity;
+  county: string;
+  id: string;
+}) {
+  const classes = useStyles();
+  return (
+    <Typography variant={'subtitle1'} gutterBottom className={classes.placeTitle}>
+      <PlaceIcon fontSize={'small'} />{' '}
+      <RouterLink to={`/aktualne-pocty-cakajucich/${county}/${id}`}>{detail.address}</RouterLink>{' '}
+    </Typography>
+  );
+}
+
+function ErrorHandler({ refresh }: { refresh: () => void }) {
+  return (
+    <Alert
+      severity={'error'}
+      action={
+        <Button color="inherit" size="small" onClick={refresh}>
+          Obnoviť
+        </Button>
+      }
+    >
+      Nastala neznáma chyba
+    </Alert>
   );
 }
 
@@ -159,7 +206,6 @@ function median(values: number[]) {
   values.sort(function (a, b) {
     return a - b;
   });
-  console.log(values);
   var half = Math.floor(values.length / 2);
   if (values.length % 2 === 1) {
     return values[half];

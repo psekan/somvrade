@@ -74,17 +74,15 @@ export function HomePage() {
               description={'Čakám v rade'}
             />
           </Grid>
-          {session.favorites && session.favorites.length !== 0 && (
-            <Grid item md={6} xs={12}>
-              <NavLink
-                to={`/favorites/${session.favorites
-                  .map(it => it.county + ':' + it.entryId)
-                  .join(',')}`}
-                label={'Moje uložené odberné miesta'}
-                description={'Chcem poznať stav'}
-              />
-            </Grid>
-          )}
+          <Grid item md={6} xs={12}>
+            <NavLink
+              to={`/favorites/${(session.favorites || [])
+                .map(it => it.county + ':' + it.entryId)
+                .join(',')}`}
+              label={'Moje uložené odberné miesta'}
+              description={'Chcem poznať stav'}
+            />
+          </Grid>
         </Grid>
       </div>
       <Typography variant={'h6'}>Informácie o testovaní:</Typography>

@@ -95,7 +95,6 @@ export interface CollectionPointEntry {
 
 export function useCollectionPointEntries(id: string) {
   return useFetch<CollectionPointEntry[]>(`/api/collectionpoints/${id}/entries`);
-  // return useFetch<CollectionPointEntry[]>(`/mock/entries.json`);
 }
 
 export interface RegisterToCollectionPointRequest {
@@ -126,7 +125,12 @@ export async function registerToCollectionPoint(
   });
 }
 
-export async function updateDeparture(token: string, id: string, departure: string, recaptchaToken: string): Promise<any> {
+export async function updateDeparture(
+  token: string,
+  id: string,
+  departure: string,
+  recaptchaToken: string,
+): Promise<any> {
   return fetchJson(`/api/entries/${id}`, {
     method: 'PUT',
     body: JSON.stringify({ token, departure, recaptcha: recaptchaToken }),
