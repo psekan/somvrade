@@ -7,7 +7,7 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-import { CollectionPointEntity, useCollectionPointEntries } from '../../services';
+import { CollectionPointEntry } from '../../services';
 
 const useStyles = makeStyles({
   headerCell: {
@@ -17,19 +17,19 @@ const useStyles = makeStyles({
 });
 
 interface CollectionEntriesProps {
-  collectionPoint: CollectionPointEntity;
   className?: string;
   limitTable?: number;
+  data: CollectionPointEntry[] | undefined;
+  isLoading: boolean;
 }
 
 export function CollectionEntries({
-  collectionPoint,
   className,
   limitTable,
+  data,
+  isLoading,
 }: CollectionEntriesProps) {
   const classes = useStyles();
-  const { response, isLoading } = useCollectionPointEntries(collectionPoint.id);
-  let data = limitTable ? response?.slice(0, limitTable) : response;
   return (
     <TableContainer component={Paper} className={className}>
       {isLoading && <LinearProgress />}
@@ -46,20 +46,20 @@ export function CollectionEntries({
           </TableRow>
         </TableHead>
         <TableBody>
-          {(data || []).map(row => (
+          {((limitTable ? data?.slice(0, limitTable) : data) || []).map(row => (
             <TableRow key={row.id}>
               <TableCell component="th" scope="row">
-                {row.arrive}
+                {formatTime(row.arrive)}
               </TableCell>
               <TableCell component="th" scope="row" align={'center'}>
                 {row.length}
               </TableCell>
               <TableCell component="th" scope="row" align={'right'}>
-                {row.departure}
+                {formatTime(row.departure)}
               </TableCell>
             </TableRow>
           ))}
-          {(response || []).length === 0 && (
+          {(data || []).length === 0 && (
             <TableRow>
               <TableCell component="th" scope="row" colSpan={3} align="center">
                 O tomto odbernom mieste zatiaľ nemáme žiadne informácie.
@@ -70,4 +70,16 @@ export function CollectionEntries({
       </Table>
     </TableContainer>
   );
+}
+
+function formatTime(time: string) {
+  if (time) {
+    if (time.length === 8) {
+      time = time.substring(0, 5);
+    }
+    if (time.charAt(0) === '0') {
+      time = time.substring(1);
+    }
+  }
+  return time;
 }

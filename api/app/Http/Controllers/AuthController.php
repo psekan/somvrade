@@ -2,10 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use  App\Models\User;
+use App\Models\User;
+use Illuminate\Validation\ValidationException;
 
+/**
+ * Class AuthController
+ * @package App\Http\Controllers
+ */
 class AuthController extends Controller
 {
     /**
@@ -18,6 +25,11 @@ class AuthController extends Controller
 
     }
 
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     * @throws ValidationException
+     */
     public function register(Request $request)
     {
         //validate incoming request
@@ -40,7 +52,7 @@ class AuthController extends Controller
             //return successful response
             return response()->json(['user' => $user, 'message' => 'CREATED'], 201);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             //return error message
             return response()->json(['message' => 'User Registration Failed!'], 409);
         }
@@ -50,7 +62,9 @@ class AuthController extends Controller
     /**
      * Get a JWT via given credentials.
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @param Request $request
+     * @return JsonResponse
+     * @throws ValidationException
      */
     public function login(Request $request)
     {
@@ -73,7 +87,7 @@ class AuthController extends Controller
     /**
      * Get the authenticated User.
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function me()
     {
@@ -83,7 +97,7 @@ class AuthController extends Controller
     /**
      * Log the user out (Invalidate the token).
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function logout()
     {
@@ -95,7 +109,7 @@ class AuthController extends Controller
     /**
      * Refresh a token.
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function refresh()
     {

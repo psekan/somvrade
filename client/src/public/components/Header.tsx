@@ -7,7 +7,7 @@ import NavigationIcon from '@material-ui/icons/Navigation';
 
 const useStyles = makeStyles(theme => ({
   margin: {
-    marginBottom: '2rem',
+    marginBottom: '1.5rem',
   },
   compact: {
     // background: theme.palette.action.hover,

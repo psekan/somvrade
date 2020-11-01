@@ -85,7 +85,7 @@ export function useCollectionPointsPublic(county: string) {
   );
 }
 
-interface CollectionPointEntry {
+export interface CollectionPointEntry {
   id: string;
   arrive: string;
   departure: string;

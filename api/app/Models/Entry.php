@@ -4,8 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Class Entry
+ * @package App\Models
+ */
 class Entry extends Model
 {
+    /**
+     * @var string
+     */
     protected $table = 'entry';
 
     /**
@@ -29,6 +36,9 @@ class Entry extends Model
         'misinformation'
     ];
 
+    /**
+     * @return int|mixed
+     */
     public function getMisinfoCountAttribute() {
         $json = $this->misinformation;
         if ($json === "") {
