@@ -59,7 +59,12 @@ export function Favorites() {
       <Typography variant={'h6'} className={classes.title}>
         Sledované odberné miesta
       </Typography>
-      {!favorites.length && <Alert severity={'info'}>Žiadne sledované odberné miesta.</Alert>}
+      {!favorites.length && (
+        <Alert severity={'info'}>
+          Žiadne sledované odberné miesta. Začať sledovať odberné miesto môžete kliknutím na ikonu
+          srdiečka nad tabuľkou odberného miesta.
+        </Alert>
+      )}
       <div className={classes.container}>
         {favorites.map(fav => (
           <PlaceDetail

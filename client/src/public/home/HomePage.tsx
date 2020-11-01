@@ -34,8 +34,8 @@ const useStyles = makeStyles((theme: Theme) =>
       textAlign: 'center',
       margin: '1.5rem 0',
       fontWeight: 800,
-      fontSize: '1.2rem'
-    }
+      fontSize: '1.2rem',
+    },
   }),
 );
 
@@ -45,7 +45,7 @@ export function HomePage() {
 
   return (
     <div>
-      <Typography variant="subtitle2" style={{marginBottom: '1rem'}}>
+      <Typography variant="subtitle2" style={{ marginBottom: '1rem' }}>
         Prvé kolo testovania prebieha v sobotu 31. októbra a v nedeľu 1. novembra, od 7:00 do 21:30.
         Bližšie informácie nájdete na{' '}
         <Link href={'https://www.somzodpovedny.sk/'} target={'_blank'}>
@@ -74,17 +74,15 @@ export function HomePage() {
               description={'Čakám v rade'}
             />
           </Grid>
-          {session.favorites && session.favorites.length !== 0 && (
-            <Grid item md={6} xs={12}>
-              <NavLink
-                to={`/favorites/${session.favorites
-                  .map(it => it.county + ':' + it.entryId)
-                  .join(',')}`}
-                label={'Moje uložené odberné miesta'}
-                description={'Chcem poznať stav'}
-              />
-            </Grid>
-          )}
+          <Grid item md={6} xs={12}>
+            <NavLink
+              to={`/favorites/${(session.favorites || [])
+                .map(it => it.county + ':' + it.entryId)
+                .join(',')}`}
+              label={'Moje uložené odberné miesta'}
+              description={'Chcem poznať stav'}
+            />
+          </Grid>
         </Grid>
       </div>
       <Typography variant={'h6'}>Informácie o testovaní:</Typography>
@@ -104,8 +102,9 @@ export function HomePage() {
         </Link>
       </Typography>
 
-      <Typography variant={'body1'}  className={classes.contact}>
-        V prípade otázok nás kontaktujte na <Link href="mailto:somvrade@gmail.com">somvrade@gmail.com</Link>.
+      <Typography variant={'body1'} className={classes.contact}>
+        V prípade otázok nás kontaktujte na{' '}
+        <Link href="mailto:somvrade@gmail.com">somvrade@gmail.com</Link>.
       </Typography>
     </div>
   );

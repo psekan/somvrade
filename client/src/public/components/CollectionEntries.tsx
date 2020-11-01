@@ -1,5 +1,5 @@
 import React from 'react';
-import { LinearProgress, makeStyles } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -20,19 +20,12 @@ interface CollectionEntriesProps {
   className?: string;
   limitTable?: number;
   data: CollectionPointEntry[] | undefined;
-  isLoading: boolean;
 }
 
-export function CollectionEntries({
-  className,
-  limitTable,
-  data,
-  isLoading
-}: CollectionEntriesProps) {
+export function CollectionEntries({ className, limitTable, data }: CollectionEntriesProps) {
   const classes = useStyles();
   return (
     <TableContainer component={Paper} className={className}>
-      {isLoading && <LinearProgress />}
       <Table size={'small'}>
         <TableHead>
           <TableRow>
@@ -75,7 +68,7 @@ export function CollectionEntries({
 function formatTime(time: string) {
   if (time) {
     if (time.length === 8) {
-      time = time.substring(0,5);
+      time = time.substring(0, 5);
     }
     if (time.charAt(0) === '0') {
       time = time.substring(1);
