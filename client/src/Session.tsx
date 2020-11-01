@@ -5,7 +5,7 @@ const defaultSession: Session = {
 };
 
 const STORAGE_KEY = '@somvrade';
-const STORAGE_KEY_COL_POINT_TOKEN = '@somvrade_cl_p_token';
+const STORAGE_KEY_COL_POINT_TOKEN = '@somvrade_cl_p_token_2';
 const STORAGE_KEY_FAVORITES = '@somvrade_favorites';
 
 const initialActions: SessionContextActions = {

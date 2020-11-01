@@ -137,7 +137,7 @@ function RegisterPlace({ id, county }: { id: string; county: string }) {
     } catch (err) {
       setIsRegistering(false);
       setRegisterError(
-        err && err.message ? err.message : 'Chyba pri odosielaní dát, skúste znova neskôr.',
+        err && err.messageTranslation ? err.messageTranslation : 'Chyba pri odosielaní dát, skúste znova neskôr.',
       );
     }
   }
@@ -221,7 +221,7 @@ function UpdateDeparture() {
     } catch (err) {
       setIsRegistering(false);
       setRegisterError(
-        err && err.message ? err.message : 'Chyba pri odosielaní dát, skúste znova neskôr.',
+        err && err.messageTranslation ? err.messageTranslation : 'Chyba pri odosielaní dát, skúste znova neskôr.',
       );
     }
   }

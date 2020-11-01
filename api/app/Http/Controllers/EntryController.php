@@ -23,7 +23,7 @@ class EntryController extends Controller
     const CACHE_KEY = 'entries';
     const CACHE_MISINFO_KEY = 'misinfo';
     const MIN_DURATION_ON_POINT = 120;
-    const ALLOWED_EARLIER_SUBMIT = 600;
+    const ALLOWED_EARLIER_SUBMIT = 300;
 
     /**
      * The cache instance.
@@ -86,10 +86,10 @@ class EntryController extends Controller
         ]);
 
         if ($this->verifyCaptcha($request->get('recaptcha'),$request->ip()) != true) {
-            return response()->json(['message' => 'Unauthorized'], 401);
+            return response()->json(['messageTranslation' => 'Nedostatočne overený užívateľ. Prosíme, otvorte si stránku ešte raz.'], 401);
         }
         if (strtotime($request->get('arrive')) > time()+self::ALLOWED_EARLIER_SUBMIT) {
-            return response()->json(['message' => 'Bad request'], 400);
+            return response()->json(['messageTranslation' => 'Nesprávne zadaný časový údaj.'], 400);
         }
 
         $token = openssl_random_pseudo_bytes(16);
@@ -121,17 +121,17 @@ class EntryController extends Controller
         ]);
 
         if ($this->verifyCaptcha($request->get('recaptcha'),$request->ip()) != true) {
-            return response()->json(['message' => 'Unauthorized'], 401);
+            return response()->json(['messageTranslation' => 'Nedostatočne overený užívateľ. Prosíme, otvorte si stránku ešte raz.'], 401);
         }
 
         $entry = Entry::query()->findOrFail($eid);
         $departureTime = strtotime($request->get('departure'));
         if ($departureTime <= strtotime($entry->arrive)+self::MIN_DURATION_ON_POINT ||
             $departureTime > time()+self::ALLOWED_EARLIER_SUBMIT) {
-            return response()->json(['message' => 'Bad request'], 400);
+            return response()->json(['messageTranslation' => 'Nesprávne zadaný časový údaj.'], 400);
         }
         if ($entry->token != $request->get('token')) {
-            return response()->json(['message' => 'Unauthorized'], 401);
+            return response()->json(['messageTranslation' => 'Nedostatočné oprávnenie. Vaše zariadenie nedisponuje platným prístup na úpravu zvoleného času.'], 403);
         }
         $entry->update($request->only('departure'));
         $this->refreshCache($entry->collection_point_id);
