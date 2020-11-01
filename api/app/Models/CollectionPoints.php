@@ -4,6 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Class CollectionPoints
+ * @package App\Models
+ */
 class CollectionPoints extends Model
 {
 
