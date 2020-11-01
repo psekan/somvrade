@@ -22,6 +22,8 @@ class EntryController extends Controller
 {
     const CACHE_KEY = 'entries';
     const CACHE_MISINFO_KEY = 'misinfo';
+    const MIN_DURATION_ON_POINT = 120;
+    const ALLOWED_EARLIER_SUBMIT = 600;
 
     /**
      * The cache instance.
@@ -86,8 +88,8 @@ class EntryController extends Controller
         if ($this->verifyCaptcha($request->get('recaptcha'),$request->ip()) != true) {
             return response()->json(['message' => 'Unauthorized'], 401);
         }
-        if (strtotime($request->get('arrive')) > time()) {
-            return response()->json(['message' => 'Bad request'], 401);
+        if (strtotime($request->get('arrive')) > time()+self::ALLOWED_EARLIER_SUBMIT) {
+            return response()->json(['message' => 'Bad request'], 400);
         }
 
         $token = openssl_random_pseudo_bytes(16);
@@ -121,11 +123,13 @@ class EntryController extends Controller
         if ($this->verifyCaptcha($request->get('recaptcha'),$request->ip()) != true) {
             return response()->json(['message' => 'Unauthorized'], 401);
         }
-        if (strtotime($request->get('departure')) > time()) {
-            return response()->json(['message' => 'Bad request'], 401);
-        }
 
         $entry = Entry::query()->findOrFail($eid);
+        $departureTime = strtotime($request->get('departure'));
+        if ($departureTime <= strtotime($entry->arrive)+self::MIN_DURATION_ON_POINT ||
+            $departureTime > time()+self::ALLOWED_EARLIER_SUBMIT) {
+            return response()->json(['message' => 'Bad request'], 400);
+        }
         if ($entry->token != $request->get('token')) {
             return response()->json(['message' => 'Unauthorized'], 401);
         }
@@ -189,6 +193,13 @@ class EntryController extends Controller
      */
     private function verifyCaptcha($token, $ip) {
         $secret = env('RECAPTCHA', '');
+        if ($secret === 'disabled') {
+            return true;
+        }
+        if ($secret === '') {
+            Log::critical('reCAPTCHA is not configured');
+            return false;
+        }
         $recaptcha = new ReCaptcha($secret);
         $resp = $recaptcha->verify($token, $ip);
         return $resp->isSuccess();
