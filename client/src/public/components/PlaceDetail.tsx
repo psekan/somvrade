@@ -46,6 +46,9 @@ interface PlaceDetailProps {
   className?: string;
 }
 
+const MAX_FAVORITES = 10;
+const VALUES_FOR_MEDIAN = 5;
+
 export function PlaceDetail({ county, id, showSearch, limitTable, className }: PlaceDetailProps) {
   const classes = useStyles();
   const history = useHistory();
@@ -96,7 +99,7 @@ export function PlaceDetail({ county, id, showSearch, limitTable, className }: P
                   <Chip
                     variant="outlined"
                     icon={<PeopleAltOutlinedIcon />}
-                    label={data.response ? median(data.response.map(a => a.length).slice(0, 10)) : ''} />
+                    label={data.response ? median(data.response.map(a => a.length).slice(0, VALUES_FOR_MEDIAN)) : ''} />
                 </Tooltip>
               )}
               {session.favorites?.some(it => it.county === county && it.entryId === id) ? (
@@ -108,7 +111,7 @@ export function PlaceDetail({ county, id, showSearch, limitTable, className }: P
                 </IconButton>
               ) : (
                 <Badge
-                  badgeContent={session.favorites && session.favorites.length > 0 ? (5-session.favorites.length) : 5}
+                  badgeContent={session.favorites && session.favorites.length > 0 ? (MAX_FAVORITES-session.favorites.length) : MAX_FAVORITES}
                   color="primary"
                   overlap="circle"
                 >
@@ -116,7 +119,7 @@ export function PlaceDetail({ county, id, showSearch, limitTable, className }: P
                     onClick={() => sessionActions.setFavorite(county, id)}
                     title={'Pridať do obľúbených'}
                     color="primary"
-                    disabled={session.favorites ? session.favorites.length >= 5 : false}
+                    disabled={session.favorites ? session.favorites.length >= MAX_FAVORITES : false}
                   >
                     <FaceOutlinedIcon />
                   </IconButton>

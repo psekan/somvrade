@@ -105,7 +105,7 @@ export function HomePage() {
       </Typography>
 
       <Typography variant={'body1'}  className={classes.contact}>
-        V prípade otázok nás kontaktuje na <Link href="mailto:somvrade@gmail.com">somvrade@gmail.com</Link>.
+        V prípade otázok nás kontaktujte na <Link href="mailto:somvrade@gmail.com">somvrade@gmail.com</Link>.
       </Typography>
     </div>
   );
