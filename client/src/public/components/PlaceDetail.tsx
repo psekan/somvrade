@@ -19,8 +19,6 @@ import { Places } from '../components/Places';
 import { CollectionEntries } from '../components/CollectionEntries';
 import { useSession } from '../../Session';
 
-const MAX_FAVORITES = 5;
-
 const useStyles = makeStyles({
   placeTitle: {
     fontStyle: 'italic',
@@ -51,6 +49,9 @@ interface PlaceDetailProps {
   limitTable?: number;
   className?: string;
 }
+
+const MAX_FAVORITES = 10;
+const VALUES_FOR_MEDIAN = 5;
 
 export function PlaceDetail({ county, id, showSearch, limitTable, className }: PlaceDetailProps) {
   const classes = useStyles();
@@ -117,7 +118,11 @@ function PlaceDetailTable({
                   <Chip
                     variant="outlined"
                     icon={<PeopleAltOutlinedIcon />}
-                    label={response ? median(response.map(a => a.length).slice(0, 10)) : ''}
+                    label={
+                      response
+                        ? median(response.map(a => a.length).slice(0, VALUES_FOR_MEDIAN))
+                        : ''
+                    }
                   />
                 </Tooltip>
               )}
