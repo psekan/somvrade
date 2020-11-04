@@ -12,7 +12,10 @@ export async function fetchJson(url: string, options?: RequestInit, cacheTime?: 
     // noop
   }
 
-  const resp = await fetch(url, options);
+  const fetchFn =
+    process.env.REACT_APP_USE_MOCK === 'true' ? (await import('./mock')).default : fetch;
+
+  const resp = await fetchFn(url, options);
   const json = await resp.json();
   if (resp.ok) {
     if (cacheTime) {
