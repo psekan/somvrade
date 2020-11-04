@@ -43,15 +43,14 @@ export function Header({ compact }: { compact: boolean }) {
           : 'Aktuálne informácie o dĺžke čakania na celoplošné testovanie COVID-19.'}
       </Typography>
       {session.isRegistered && (
-        <Fab
-          variant="extended"
-          color="primary"
-          className={classes.fab}
-          href={`/zadat-pocet-cakajucich/${session.registeredToken?.county}/${session.registeredToken?.collectionPointId}/register`}
+        <Link
+          to={`/zadat-pocet-cakajucich/${session.registeredToken?.county}/${session.registeredToken?.collectionPointId}/register`}
         >
-          <NavigationIcon />
-          Moje odberné miesto
-        </Fab>
+          <Fab variant="extended" color="primary" className={classes.fab}>
+            <NavigationIcon />
+            Moje odberné miesto
+          </Fab>
+        </Link>
       )}
     </div>
   );
