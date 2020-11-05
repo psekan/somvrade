@@ -6,8 +6,19 @@ import { CheckWaiting, PlaceDetailPage as CheckWaitingPlaceDetail } from './chec
 import { SetWaiting, PlaceRegister } from './setwaiting';
 import { Favorites } from './favorites';
 import { NotFound } from './notfound';
+import { Link, Typography, makeStyles } from '@material-ui/core';
+
+const useStyles = makeStyles({
+  contact: {
+    margin: '60px 0',
+    textAlign: 'center',
+    fontSize: '0.9rem',
+    lineHeight: '1.5em',
+  },
+});
 
 export function Public() {
+  const classes = useStyles();
   return (
     <Container>
       <Switch>
@@ -43,6 +54,11 @@ export function Public() {
           <NotFound />
         </Route>
       </Switch>
+      <Typography variant={'body1'} className={classes.contact}>
+        Zaznamenali ste chybu alebo ste nenašli ste odberné miesto? Napíšte nám na{' '}
+        <Link href="mailto:somvrade@gmail.com">somvrade@gmail.com</Link> alebo zavolajte na{' '}
+        <Link href="tel:0233070498">0233070498</Link>.
+      </Typography>
     </Container>
   );
 }

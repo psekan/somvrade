@@ -1,14 +1,13 @@
 import React from 'react';
 import { useHistory, Link as RouterLink } from 'react-router-dom';
 import PlaceIcon from '@material-ui/icons/Place';
-import { Typography, makeStyles, Chip, Tooltip, Badge } from '@material-ui/core';
+import { Typography, makeStyles, Badge } from '@material-ui/core';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import Alert from '@material-ui/lab/Alert';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
-import FaceOutlinedIcon from '@material-ui/icons/FavoriteBorder';
-import FavoriteIcon from '@material-ui/icons/Favorite';
-import PeopleAltOutlinedIcon from '@material-ui/icons/PeopleAltOutlined';
+import FaceOutlinedIcon from '@material-ui/icons/BookmarkBorder';
+import FavoriteIcon from '@material-ui/icons/Bookmark';
 
 import {
   useCollectionPointsPublic,
@@ -51,7 +50,6 @@ interface PlaceDetailProps {
 }
 
 const MAX_FAVORITES = 10;
-const VALUES_FOR_MEDIAN = 5;
 
 export function PlaceDetail({ county, id, showSearch, limitTable, className }: PlaceDetailProps) {
   const classes = useStyles();
@@ -113,19 +111,6 @@ function PlaceDetailTable({
           <div className={classes.locationContainer}>
             <PlaceName county={county} id={id} detail={detail} />
             <div style={{ textAlign: 'right' }}>
-              {(response || []).length > 0 && (
-                <Tooltip placement="left" arrow title="Priemerne čakajúcich">
-                  <Chip
-                    variant="outlined"
-                    icon={<PeopleAltOutlinedIcon />}
-                    label={
-                      response
-                        ? median(response.map(a => a.length).slice(0, VALUES_FOR_MEDIAN))
-                        : ''
-                    }
-                  />
-                </Tooltip>
-              )}
               {session.favorites?.some(it => it.county === county && it.entryId === id) ? (
                 <IconButton
                   onClick={() => sessionActions.setFavorite(county, id)}
@@ -204,16 +189,4 @@ function ErrorHandler({ refresh }: { refresh: () => void }) {
       Nastala neznáma chyba
     </Alert>
   );
-}
-
-function median(values: number[]) {
-  if (values.length === 0) return 0;
-  values.sort(function (a, b) {
-    return a - b;
-  });
-  var half = Math.floor(values.length / 2);
-  if (values.length % 2 === 1) {
-    return values[half];
-  }
-  return Math.round((values[half - 1] + values[half]) / 2.0);
 }
