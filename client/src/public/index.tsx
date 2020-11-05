@@ -55,7 +55,7 @@ export function Public() {
         </Route>
       </Switch>
       <Typography variant={'body1'} className={classes.contact}>
-        Zaznamenali ste chybu alebo ste nenašli ste odberné miesto? Napíšte nám na{' '}
+        Zaznamenali ste chybu alebo ste nenašli odberné miesto? Napíšte nám na{' '}
         <Link href="mailto:somvrade@gmail.com">somvrade@gmail.com</Link> alebo zavolajte na{' '}
         <Link href="tel:0233070498">0233070498</Link>.
       </Typography>

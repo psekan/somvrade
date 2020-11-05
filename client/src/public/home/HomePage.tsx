@@ -113,7 +113,7 @@ export function HomePage() {
         <ClockIcon fontSize={'small'} className={classes.infoMessageIcon} />
         <span>
           <span className={classes.bold}>Prestávka v testovaní</span> - odberné miesta budú mať{' '}
-          <span className={classes.bold}>dve prestávny</span> počas testovacích dní a to spravidla{' '}
+          <span className={classes.bold}>dve prestávky</span> počas testovacích dní a to spravidla{' '}
           <span className={classes.bold}>
             od 12:00 do 12:45 a od 17:00 do 17:30. Časy prestávok sa môžu líšiť
           </span>{' '}
