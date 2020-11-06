@@ -162,7 +162,7 @@ function PlaceDetailTable({
               variant={'outlined'}
               size={'small'}
               avatar={<Avatar>{detail.teams || '?'}</Avatar>}
-              label={'Počet odberných miest'}
+              label={'Počet odberných tímov'}
               color={'primary'}
             />
             {showSocialButtons && <SocialButtons />}
