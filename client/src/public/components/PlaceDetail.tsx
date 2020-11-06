@@ -1,14 +1,13 @@
 import React from 'react';
 import { useHistory, Link as RouterLink } from 'react-router-dom';
 import PlaceIcon from '@material-ui/icons/Place';
-import { Typography, makeStyles, Chip, Tooltip, Badge } from '@material-ui/core';
+import { Typography, makeStyles, Badge } from '@material-ui/core';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import Alert from '@material-ui/lab/Alert';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
-import FaceOutlinedIcon from '@material-ui/icons/FavoriteBorder';
-import FavoriteIcon from '@material-ui/icons/Favorite';
-import PeopleAltOutlinedIcon from '@material-ui/icons/PeopleAltOutlined';
+import FaceOutlinedIcon from '@material-ui/icons/BookmarkBorder';
+import FavoriteIcon from '@material-ui/icons/Bookmark';
 
 import {
   useCollectionPointsPublic,
@@ -18,6 +17,8 @@ import {
 import { Places } from '../components/Places';
 import { CollectionEntries } from '../components/CollectionEntries';
 import { useSession } from '../../Session';
+import { MAX_FAVORITES } from '../../constants';
+import { SocialButtons } from '../components/SocialButtons';
 
 const useStyles = makeStyles({
   placeTitle: {
@@ -48,12 +49,17 @@ interface PlaceDetailProps {
   showSearch?: boolean;
   limitTable?: number;
   className?: string;
+  showSocialButtons?: boolean;
 }
 
-const MAX_FAVORITES = 10;
-const VALUES_FOR_MEDIAN = 5;
-
-export function PlaceDetail({ county, id, showSearch, limitTable, className }: PlaceDetailProps) {
+export function PlaceDetail({
+  county,
+  id,
+  showSearch,
+  limitTable,
+  className,
+  showSocialButtons,
+}: PlaceDetailProps) {
   const classes = useStyles();
   const history = useHistory();
   const { isLoading, response, error, refresh } = useCollectionPointsPublic(county);
@@ -83,6 +89,7 @@ export function PlaceDetail({ county, id, showSearch, limitTable, className }: P
           limitTable={limitTable}
           className={className}
           detail={detail}
+          showSocialButtons={showSocialButtons}
         />
       )}
     </div>
@@ -94,6 +101,7 @@ function PlaceDetailTable({
   county,
   id,
   limitTable,
+  showSocialButtons,
 }: { detail: CollectionPointEntity } & PlaceDetailProps) {
   const classes = useStyles();
 
@@ -113,23 +121,10 @@ function PlaceDetailTable({
           <div className={classes.locationContainer}>
             <PlaceName county={county} id={id} detail={detail} />
             <div style={{ textAlign: 'right' }}>
-              {(response || []).length > 0 && (
-                <Tooltip placement="left" arrow title="Priemerne čakajúcich">
-                  <Chip
-                    variant="outlined"
-                    icon={<PeopleAltOutlinedIcon />}
-                    label={
-                      response
-                        ? median(response.map(a => a.length).slice(0, VALUES_FOR_MEDIAN))
-                        : ''
-                    }
-                  />
-                </Tooltip>
-              )}
               {session.favorites?.some(it => it.county === county && it.entryId === id) ? (
                 <IconButton
                   onClick={() => sessionActions.setFavorite(county, id)}
-                  title={'Odstrániť z obľúbených'}
+                  title={'Odstrániť zo sledovaných odberných miest'}
                 >
                   <FavoriteIcon />
                 </IconButton>
@@ -145,7 +140,7 @@ function PlaceDetailTable({
                 >
                   <IconButton
                     onClick={() => sessionActions.setFavorite(county, id)}
-                    title={'Pridať do obľúbených'}
+                    title={'Pridať do sledovaných odberných miest'}
                     color="primary"
                     disabled={session.favorites ? session.favorites.length >= MAX_FAVORITES : false}
                   >
@@ -155,6 +150,7 @@ function PlaceDetailTable({
               )}
             </div>
           </div>
+          {showSocialButtons && <SocialButtons />}
           <CollectionEntries className={classes.table} limitTable={limitTable} data={response} />
           {!session.isRegistered && (
             <Button
@@ -204,16 +200,4 @@ function ErrorHandler({ refresh }: { refresh: () => void }) {
       Nastala neznáma chyba
     </Alert>
   );
-}
-
-function median(values: number[]) {
-  if (values.length === 0) return 0;
-  values.sort(function (a, b) {
-    return a - b;
-  });
-  var half = Math.floor(values.length / 2);
-  if (values.length % 2 === 1) {
-    return values[half];
-  }
-  return Math.round((values[half - 1] + values[half]) / 2.0);
 }

@@ -13,6 +13,7 @@ const useStyles = makeStyles({
     margin: '1em 5px',
     minWidth: 95,
     wordWrap: 'break-word',
+    wordBreak: 'break-all',
     minHeight: 60,
   },
   changeLink: {

@@ -92,7 +92,7 @@ export function RegisterPlace({ id, county }: RegisterPlaceProps) {
             </Grid>
             <Grid item md={4} xs={6}>
               <TextField
-                label="Počet čakajúcich ľudí"
+                label="Počet čakajúcich"
                 type="number"
                 name={'waitingnumber'}
                 InputProps={{ inputProps: { min: 0, max: 500 } }}

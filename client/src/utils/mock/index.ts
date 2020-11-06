@@ -14,10 +14,12 @@ export default function mock(url: string, options?: RequestInit) {
     });
   }
 
-  console.log('MOCK Res:', JSON.stringify(mockObj.response));
-
   return Promise.resolve({
     ok: true,
-    json: () => Promise.resolve(mockObj.response),
+    json: () => {
+      const response = mockObj.response();
+      console.log('MOCK Res:', JSON.stringify(response));
+      return Promise.resolve(response);
+    },
   });
 }

@@ -1,8 +1,9 @@
 import React from 'react';
 import { Link, Typography, makeStyles, Theme, createStyles, Grid } from '@material-ui/core';
+import CalendarIcon from '@material-ui/icons/Today';
+import ClockIcon from '@material-ui/icons/QueryBuilder';
 import { NavLink } from '../components/NavLink';
 import { useSession } from '../../Session';
-import Alert from '@material-ui/lab/Alert';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -29,12 +30,24 @@ const useStyles = makeStyles((theme: Theme) =>
     bottomInfo: {
       textAlign: 'center',
       display: 'block',
+      fontSize: '1.2rem',
     },
     contact: {
       textAlign: 'center',
       margin: '1.5rem 0',
+      fontSize: '1rem',
+      paddingBottom: 40,
+    },
+    infoMessage: {
+      margin: '20px 0px',
+      display: 'flex',
+    },
+    infoMessageIcon: {
+      verticalAlign: 'bottom',
+      marginRight: 10,
+    },
+    bold: {
       fontWeight: 800,
-      fontSize: '1.2rem',
     },
   }),
 );
@@ -45,16 +58,13 @@ export function HomePage() {
 
   return (
     <div>
-      <Typography variant="subtitle2" style={{ marginBottom: '1rem' }}>
-        Prvé kolo testovania prebieha v sobotu 31. októbra a v nedeľu 1. novembra, od 7:00 do 21:30.
-        Bližšie informácie nájdete na{' '}
-        <Link href={'https://www.somzodpovedny.sk/'} target={'_blank'}>
-          somzodpovedny.sk
-        </Link>
+      <Typography variant={'h6'} className={classes.optionsTitle}>
+        2. kolo celoplošného testovania
       </Typography>
-      <Alert severity="info">
-        V sobotu využilo túto službu 360 000 ľudí. Ďakujeme že pomáhate ostatným a šírite ju ďalej.
-      </Alert>
+      <Typography variant="subtitle2" style={{ marginBottom: '1rem' }}>
+        Zoznam odberných miest je aktualizovaný podľa okresov, v ktorých sa uskutočňuje 2. kolo
+        celoplošného testovania.
+      </Typography>
       <div className={classes.options}>
         <Typography variant={'h6'} className={classes.optionsTitle}>
           Vyberte jednu z možností:
@@ -76,17 +86,47 @@ export function HomePage() {
           </Grid>
           <Grid item md={6} xs={12}>
             <NavLink
-              to={`/favorites/${(session.favorites || [])
+              to={`/watching/${(session.favorites || [])
                 .map(it => it.county + ':' + it.entryId)
                 .join(',')}`}
-              label={'Moje uložené odberné miesta'}
+              label={'Sledované odberné miesta'}
               description={'Chcem poznať stav'}
             />
           </Grid>
         </Grid>
       </div>
       <Typography variant={'h6'}>Informácie o testovaní:</Typography>
-      <Typography variant={'body1'}>Ako prebieha testovanie:</Typography>
+      <div className={classes.infoMessage}>
+        <CalendarIcon fontSize={'small'} className={classes.infoMessageIcon} />
+        <span>
+          Druhé kolo celoplošného testovania prebieha{' '}
+          <span className={classes.bold}>
+            v 45. okresoch v sobotu 7. novembra a v nedeľu 8. novembra, od 8:00 do 20:00.
+          </span>{' '}
+          Zoznam okresov, v ktorých sa koná druhé kolo celoplošného testovania nájdete na stránke{' '}
+          <Link
+            href={
+              'https://www.somzodpovedny.sk/v-druhom-kole-sa-bude-plosne-testovat-45-okresov%e2%80%8b/'
+            }
+            target={'_blank'}
+          >
+            somzodpovedny.sk
+          </Link>
+        </span>
+      </div>
+      <div className={classes.infoMessage}>
+        <ClockIcon fontSize={'small'} className={classes.infoMessageIcon} />
+        <span>
+          <span className={classes.bold}>Prestávka v testovaní</span> - odberné miesta budú mať{' '}
+          <span className={classes.bold}>dve prestávky</span> počas testovacích dní a to spravidla{' '}
+          <span className={classes.bold}>
+            od 12:00 do 12:45 a od 17:00 do 17:30. Časy prestávok sa môžu líšiť
+          </span>{' '}
+          a preto odporúčame sledovať aktuálne informácie pre vami preferované odberné miesto.
+        </span>
+      </div>
+
+      <Typography variant={'h6'}>Ako prebieha testovanie:</Typography>
       <iframe
         title={'Ako prebieha testovanie'}
         className={classes.video}
@@ -100,11 +140,6 @@ export function HomePage() {
         <Link href={'https://www.somzodpovedny.sk/'} target={'_blank'}>
           somzodpovedny.sk
         </Link>
-      </Typography>
-
-      <Typography variant={'body1'} className={classes.contact}>
-        V prípade otázok nás kontaktujte na{' '}
-        <Link href="mailto:somvrade@gmail.com">somvrade@gmail.com</Link>.
       </Typography>
     </div>
   );

@@ -91,6 +91,7 @@ export interface CollectionPointEntry {
   departure: string;
   token: string;
   length: number;
+  verified?: boolean;
 }
 
 export function useCollectionPointEntries(id: string) {

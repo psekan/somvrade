@@ -1,10 +1,14 @@
 import React, { useEffect, useRef } from 'react';
 import { makeStyles, Typography } from '@material-ui/core';
 import { useParams, useHistory } from 'react-router-dom';
+import Grid from '@material-ui/core/Grid';
+import FaceOutlinedIcon from '@material-ui/icons/BookmarkBorder';
+import Alert from '@material-ui/lab/Alert';
 import { PlaceDetail } from '../components/PlaceDetail';
 import { useSession } from '../../Session';
-import Alert from '@material-ui/lab/Alert';
 import { BackToStartLink } from '../components/BackToStartLink';
+import { MAX_FAVORITES } from '../../constants';
+import { SocialButtons } from '../components/SocialButtons';
 
 const useStyles = makeStyles({
   container: {
@@ -13,11 +17,16 @@ const useStyles = makeStyles({
     justifyContent: 'space-between',
   },
   detail: {
+    width: '100%',
     marginBottom: 40,
     flex: '0 0 48%',
   },
   title: {
     marginBottom: 30,
+  },
+  titleWrapper: {
+    display: 'flex',
+    justifyContent: 'space-between',
   },
 });
 
@@ -32,10 +41,10 @@ export function Favorites() {
   useEffect(() => {
     if (nextRender.current) {
       if (!(session.favorites || []).length) {
-        history.push('/favorites');
+        history.push('/watching');
       } else {
         history.push(
-          `/favorites/${session.favorites!.map(it => it.county + ':' + it.entryId).join(',')}`,
+          `/watching/${session.favorites!.map(it => it.county + ':' + it.entryId).join(',')}`,
         );
       }
     }
@@ -43,6 +52,13 @@ export function Favorites() {
     nextRender.current = true;
     // eslint-disable-next-line
   }, [session]);
+
+  useEffect(() => {
+    // protection for max watching places
+    if (pairs.length > MAX_FAVORITES) {
+      history.replace(`/watching/${pairs.slice(0, MAX_FAVORITES).join(',')}`);
+    }
+  });
 
   const favorites = pairs
     .filter(pair => !!pair)
@@ -56,27 +72,25 @@ export function Favorites() {
 
   return (
     <>
-      <Typography variant={'h6'} className={classes.title}>
-        Sledované odberné miesta
-      </Typography>
+      <div className={classes.titleWrapper}>
+        <Typography variant={'h6'} className={classes.title}>
+          Sledované odberné miesta
+        </Typography>
+        <SocialButtons />
+      </div>
       {!favorites.length && (
         <Alert severity={'info'}>
-          Žiadne sledované odberné miesta. Začať sledovať odberné miesto môžete kliknutím na ikonu
-          srdiečka nad tabuľkou odberného miesta.
+          Žiadne sledované odberné miesta. Začať sledovať odberné miesto môžete kliknutím na ikonu{' '}
+          <FaceOutlinedIcon fontSize={'small'} /> nad tabuľkou odberného miesta.
         </Alert>
       )}
-      <div className={classes.container}>
+      <Grid container spacing={2}>
         {favorites.map(fav => (
-          <PlaceDetail
-            className={classes.detail}
-            key={`${fav.entityId}_${fav.county}`}
-            id={fav.entityId}
-            county={fav.county}
-            showSearch={false}
-            limitTable={5}
-          />
+          <Grid item key={`${fav.entityId}_${fav.county}`} xs={12} md={6}>
+            <PlaceDetail id={fav.entityId} county={fav.county} showSearch={false} limitTable={5} />
+          </Grid>
         ))}
-      </div>
+      </Grid>
       <BackToStartLink center />
     </>
   );
