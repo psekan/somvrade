@@ -1,13 +1,14 @@
 import React from 'react';
 import { useHistory, Link as RouterLink } from 'react-router-dom';
 import PlaceIcon from '@material-ui/icons/Place';
-import { Typography, makeStyles, Badge } from '@material-ui/core';
+import { Typography, makeStyles, Badge, Chip } from '@material-ui/core';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import Alert from '@material-ui/lab/Alert';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import FaceOutlinedIcon from '@material-ui/icons/BookmarkBorder';
 import FavoriteIcon from '@material-ui/icons/Bookmark';
+import Avatar from '@material-ui/core/Avatar';
 
 import {
   useCollectionPointsPublic,
@@ -39,6 +40,12 @@ const useStyles = makeStyles({
   locationContainer: {
     display: 'flex',
     justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  teamsAndSocials: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    marginBottom: 10,
     alignItems: 'center',
   },
 });
@@ -150,7 +157,16 @@ function PlaceDetailTable({
               )}
             </div>
           </div>
-          {showSocialButtons && <SocialButtons />}
+          <div className={classes.teamsAndSocials}>
+            <Chip
+              variant={'outlined'}
+              size={'small'}
+              avatar={<Avatar>{detail.teams || '?'}</Avatar>}
+              label={'Počet odberných miest'}
+              color={'primary'}
+            />
+            {showSocialButtons && <SocialButtons />}
+          </div>
           <CollectionEntries className={classes.table} limitTable={limitTable} data={response} />
           {!session.isRegistered && (
             <Button

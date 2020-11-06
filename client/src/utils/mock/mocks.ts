@@ -13,6 +13,7 @@ const mocks = [
         district: 'foo',
         address: 'Bratislava, Stare mesto',
         active: true,
+        teams: 1,
       },
       {
         id: '2',
@@ -21,6 +22,7 @@ const mocks = [
         district: 'foo',
         address: 'ZŠ I. Bukovčana 3 ',
         active: true,
+        teams: 3,
       },
       {
         id: '3',
@@ -29,6 +31,7 @@ const mocks = [
         district: 'foo',
         address: 'Šport. areál P. Horova 16 ',
         active: true,
+        teams: 2,
       },
       {
         id: '4',
@@ -45,6 +48,7 @@ const mocks = [
         district: 'foo',
         address: 'Istra Centrum, Hradištná 43',
         active: true,
+        teams: 4,
       },
       {
         id: '6',
