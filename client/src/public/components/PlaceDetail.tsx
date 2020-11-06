@@ -17,6 +17,8 @@ import {
 import { Places } from '../components/Places';
 import { CollectionEntries } from '../components/CollectionEntries';
 import { useSession } from '../../Session';
+import { MAX_FAVORITES } from '../../constants';
+import { SocialButtons } from '../components/SocialButtons';
 
 const useStyles = makeStyles({
   placeTitle: {
@@ -47,11 +49,17 @@ interface PlaceDetailProps {
   showSearch?: boolean;
   limitTable?: number;
   className?: string;
+  showSocialButtons?: boolean;
 }
 
-const MAX_FAVORITES = 10;
-
-export function PlaceDetail({ county, id, showSearch, limitTable, className }: PlaceDetailProps) {
+export function PlaceDetail({
+  county,
+  id,
+  showSearch,
+  limitTable,
+  className,
+  showSocialButtons,
+}: PlaceDetailProps) {
   const classes = useStyles();
   const history = useHistory();
   const { isLoading, response, error, refresh } = useCollectionPointsPublic(county);
@@ -81,6 +89,7 @@ export function PlaceDetail({ county, id, showSearch, limitTable, className }: P
           limitTable={limitTable}
           className={className}
           detail={detail}
+          showSocialButtons={showSocialButtons}
         />
       )}
     </div>
@@ -92,6 +101,7 @@ function PlaceDetailTable({
   county,
   id,
   limitTable,
+  showSocialButtons,
 }: { detail: CollectionPointEntity } & PlaceDetailProps) {
   const classes = useStyles();
 
@@ -114,7 +124,7 @@ function PlaceDetailTable({
               {session.favorites?.some(it => it.county === county && it.entryId === id) ? (
                 <IconButton
                   onClick={() => sessionActions.setFavorite(county, id)}
-                  title={'Odstrániť z obľúbených'}
+                  title={'Odstrániť zo sledovaných odberných miest'}
                 >
                   <FavoriteIcon />
                 </IconButton>
@@ -130,7 +140,7 @@ function PlaceDetailTable({
                 >
                   <IconButton
                     onClick={() => sessionActions.setFavorite(county, id)}
-                    title={'Pridať do obľúbených'}
+                    title={'Pridať do sledovaných odberných miest'}
                     color="primary"
                     disabled={session.favorites ? session.favorites.length >= MAX_FAVORITES : false}
                   >
@@ -140,6 +150,7 @@ function PlaceDetailTable({
               )}
             </div>
           </div>
+          {showSocialButtons && <SocialButtons />}
           <CollectionEntries className={classes.table} limitTable={limitTable} data={response} />
           {!session.isRegistered && (
             <Button

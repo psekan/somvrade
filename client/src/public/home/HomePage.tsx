@@ -86,10 +86,10 @@ export function HomePage() {
           </Grid>
           <Grid item md={6} xs={12}>
             <NavLink
-              to={`/favorites/${(session.favorites || [])
+              to={`/watching/${(session.favorites || [])
                 .map(it => it.county + ':' + it.entryId)
                 .join(',')}`}
-              label={'Moje uložené odberné miesta'}
+              label={'Sledované odberné miesta'}
               description={'Chcem poznať stav'}
             />
           </Grid>
@@ -104,7 +104,12 @@ export function HomePage() {
             v 45. okresoch v sobotu 7. novembra a v nedeľu 8. novembra, od 8:00 do 20:00.
           </span>{' '}
           Zoznam okresov, v ktorých sa koná druhé kolo celoplošného testovania nájdete na stránke{' '}
-          <Link href={'https://www.somzodpovedny.sk/'} target={'_blank'}>
+          <Link
+            href={
+              'https://www.somzodpovedny.sk/v-druhom-kole-sa-bude-plosne-testovat-45-okresov%e2%80%8b/'
+            }
+            target={'_blank'}
+          >
             somzodpovedny.sk
           </Link>
         </span>

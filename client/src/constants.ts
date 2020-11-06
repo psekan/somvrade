@@ -1,3 +1,5 @@
+export const MAX_FAVORITES = 10;
+
 export const COUNTY = [
   {
     id: 'BA',

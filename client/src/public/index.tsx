@@ -46,7 +46,7 @@ export function Public() {
         <Route path="/zadat-pocet-cakajucich/:county/:id/register" exact>
           <PlaceRegister />
         </Route>
-        <Route path={['/favorites/:ids', '/favorites']} exact>
+        <Route path={['/watching/:ids', '/watching']} exact>
           <Favorites />
         </Route>
         <Redirect exact path={'//'} to={'/'} />
@@ -55,9 +55,9 @@ export function Public() {
         </Route>
       </Switch>
       <Typography variant={'body1'} className={classes.contact}>
-        Zaznamenali ste chybu alebo ste nenašli odberné miesto? Napíšte nám na{' '}
-        <Link href="mailto:somvrade@gmail.com">somvrade@gmail.com</Link> alebo zavolajte na{' '}
-        <Link href="tel:0233070498">0233070498</Link>.
+        Zaznamenali ste chybu, nenašli ste odberné miesto, alebo máte iný dotaz? Prosím, napíšte nám
+        na <Link href="mailto:info@somvrade.sk">info@somvrade.sk</Link>, alebo nám zavolajte na{' '}
+        <Link href="tel:0233070498">02/33070498</Link>, kde zistíte viac informácií.
       </Typography>
     </Container>
   );

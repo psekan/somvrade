@@ -13,7 +13,7 @@ export function PlaceDetailPage() {
       <Typography variant={'h6'} gutterBottom>
         Aktuálne počty čakajúcich
       </Typography>
-      <PlaceDetail id={id} county={county} showSearch />
+      <PlaceDetail id={id} county={county} showSearch showSocialButtons />
       <TextLink
         to={`/aktualne-pocty-cakajucich/${county}`}
         text={'Pozrieť iné odberné miesto'}

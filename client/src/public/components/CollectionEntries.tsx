@@ -49,6 +49,12 @@ const useStyles = makeStyles(theme => ({
   },
   verified: {
     background: theme.palette.primary.light,
+    transition: 'background 0.3s',
+    cursor: 'pointer',
+
+    '&:hover': {
+      background: theme.palette.secondary.light,
+    },
   },
 }));
 
