@@ -26,6 +26,7 @@ export interface CollectionPointEntity {
   district: string;
   address: string;
   active: boolean;
+  teams?: number;
 }
 
 export function useCollectionPoints(onlyWaiting: boolean) {

@@ -17,9 +17,9 @@ const useStyles = makeStyles({
     justifyContent: 'space-between',
   },
   detail: {
-    width: '100%',
-    marginBottom: 40,
-    flex: '0 0 48%',
+    border: '1px solid #dcdcdc',
+    borderRadius: 4,
+    padding: 10,
   },
   title: {
     marginBottom: 30,
@@ -87,7 +87,13 @@ export function Favorites() {
       <Grid container spacing={2}>
         {favorites.map(fav => (
           <Grid item key={`${fav.entityId}_${fav.county}`} xs={12} md={6}>
-            <PlaceDetail id={fav.entityId} county={fav.county} showSearch={false} limitTable={5} />
+            <PlaceDetail
+              id={fav.entityId}
+              county={fav.county}
+              showSearch={false}
+              limitTable={5}
+              className={classes.detail}
+            />
           </Grid>
         ))}
       </Grid>
