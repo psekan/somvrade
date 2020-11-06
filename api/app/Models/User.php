@@ -57,4 +57,25 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     {
         return [];
     }
+
+    public function collectionPoints()
+    {
+        return $this->belongsToMany(
+            CollectionPoints::class,
+            'collection_points_users',
+            'user_id',
+            'collection_point_id');
+    }
+
+    /**
+     * @param $id
+     * @return CollectionPoints|null
+     */
+    public function allowedCollectionPoints($id) {
+        $collectionPoint = $this->collectionPoints()->whereKey($id)->first();
+        if ($collectionPoint instanceof CollectionPoints) {
+            return $collectionPoint;
+        }
+        return null;
+    }
 }
