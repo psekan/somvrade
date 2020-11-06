@@ -24,4 +24,8 @@ class Controller extends BaseController
             'expires_in' => Auth::factory()->getTTL() * 60
         ], 200);
     }
+
+    protected function forbidden() {
+        return response()->json(['message' => 'Unauthorized'], 401);
+    }
 }

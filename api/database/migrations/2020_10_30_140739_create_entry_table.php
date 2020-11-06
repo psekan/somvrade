@@ -17,12 +17,14 @@ class CreateEntryTable extends Migration
             $table->id();
             $table->bigInteger('collection_point_id')->unsigned();
             $table->foreign('collection_point_id')->references('id')->on('collection_points');
+            $table->date('day');
             $table->time('arrive');
             $table->integer('length');
             $table->time('departure')->nullable();
+            $table->string('admin_note', 250)->nullable();
+            $table->boolean('verified')->default(false);
             $table->string('token', 40);
-            $table->string('ipaddress', 20);
-            $table->string('misinformation',100);
+            $table->index(['collection_point_id', 'day', 'arrive']);
             $table->timestamps();
         });
     }

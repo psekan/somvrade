@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Entry;
+use App\Models\User;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -22,9 +23,8 @@ use ReCaptcha\ReCaptcha;
 class EntryController extends Controller
 {
     const CACHE_KEY = 'entries';
-    const CACHE_MISINFO_KEY = 'misinfo';
-    const MIN_DURATION_ON_POINT = 120;
-    const ALLOWED_EARLIER_SUBMIT = 300;
+    const MIN_DURATION_ON_POINT = 60;
+    const ALLOWED_EARLIER_SUBMIT = 600;
 
     /**
      * The cache instance.
@@ -41,13 +41,15 @@ class EntryController extends Controller
     }
 
     /**
+     * Refresh the cache of a collection point's entries
      * @param $id
      * @return Builder[]|Collection
      * @throws InvalidArgumentException
      */
-    public function refreshCache($id) {
+    private function refreshCache($id) {
         $entries = Entry::query()
             ->where('collection_point_id', $id)
+            ->where('day', date('Y-m-d'))
             ->orderBy('arrive', 'desc')
             ->limit(100)
             ->get()->makeHidden(['token', 'collection_point_id']);
@@ -56,22 +58,57 @@ class EntryController extends Controller
     }
 
     /**
+     * Get cached entries for a collection point
+     * @param $id
+     * @return Collection|array
+     * @throws InvalidArgumentException
+     */
+    private function getByPoint($id) {
+        if (!$this->cache->has(self::CACHE_KEY.$id)) {
+            return $this->refreshCache($id);
+        }
+        return $this->cache->get(self::CACHE_KEY.$id);
+    }
+
+    /**
+     * Return true if a user is authenticated and is capable to modify the collection point
+     * @param $id
+     * @return bool
+     */
+    private function isUserAdmin($id) {
+        if (auth()->check()) {
+            /** @var User $user */
+            $user = auth()->user();
+            $collectionPoint = $user->allowedCollectionPoints($id);
+            if ($collectionPoint !== null) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * @return string
+     */
+    private function generateToken() {
+        $token = openssl_random_pseudo_bytes(16);
+        return bin2hex($token);
+    }
+
+    /**
+     * Get entries for a collection point
      * @param $id
      * @return JsonResponse
      * @throws InvalidArgumentException
      */
     public function showAll($id)
     {
-        if (!$this->cache->has(self::CACHE_KEY.$id)) {
-            $entries = $this->refreshCache($id);
-        }
-        else {
-            $entries = $this->cache->get(self::CACHE_KEY.$id);
-        }
-        return response()->json($entries);
+        return response()->json($this->getByPoint($id));
     }
 
     /**
+     * Create an entry
+     * If authenticated user is an admin for this point, create verified entry with admin note
      * @param $id
      * @param Request $request
      * @return JsonResponse
@@ -86,22 +123,28 @@ class EntryController extends Controller
             'recaptcha' => 'required'
         ]);
 
+        $verified = false;
+        $adminNote = '';
+        $isAdmin = $this->isUserAdmin($id);
+        if ($isAdmin) {
+            $verified = true;
+            $adminNote = $request->get('admin_note', '');
+        }
+
         if ($this->verifyCaptcha($request->get('recaptcha'),$request->ip()) != true) {
             return response()->json(['messageTranslation' => 'Nedostatočne overený užívateľ. Prosíme, otvorte si stránku ešte raz.'], 401);
         }
-        if (strtotime($request->get('arrive')) > time()+self::ALLOWED_EARLIER_SUBMIT) {
+        if (strtotime($request->get('arrive')) > time()+self::ALLOWED_EARLIER_SUBMIT && !$isAdmin) {
             return response()->json(['messageTranslation' => 'Nesprávne zadaný časový údaj.'], 400);
         }
 
-        $token = openssl_random_pseudo_bytes(16);
-        $token = bin2hex($token);
-
         $entry = Entry::query()->create($request->merge([
+            'day' => date('Y-m-d'),
             'collection_point_id' => $id,
-            'ipaddress' => $request->ip(),
-            'token' => $token,
-            'misinformation' => ''
-        ])->all());
+            'token' => $this->generateToken(),
+            'verified' => $verified,
+            'admin_note' => $adminNote
+        ])->only(['collection_point_id', 'day', 'arrive', 'length', 'admin_note', 'token']));
         $this->refreshCache($id);
         return response()->json($entry, 201);
     }
@@ -126,46 +169,30 @@ class EntryController extends Controller
         }
 
         $entry = Entry::query()->findOrFail($eid);
-        $departureTime = strtotime($request->get('departure'));
-        if ($departureTime <= strtotime($entry->arrive)+self::MIN_DURATION_ON_POINT ||
-            $departureTime > time()+self::ALLOWED_EARLIER_SUBMIT) {
-            return response()->json(['messageTranslation' => 'Nesprávne zadaný časový údaj.'], 400);
-        }
-        if ($entry->token != $request->get('token')) {
-            return response()->json(['messageTranslation' => 'Nedostatočné oprávnenie. Vaše zariadenie nedisponuje platným prístup na úpravu zvoleného času.'], 403);
-        }
-        $entry->update($request->only('departure'));
-        $this->refreshCache($entry->collection_point_id);
-        return response()->json($entry, 200);
-    }
+        $collectionPointId = $entry->collection_point_id;
 
-    /**
-     * @param $eid
-     * @param Request $request
-     * @return JsonResponse
-     * @throws InvalidArgumentException
-     */
-    public function maskAsMisinformation($eid, Request $request)
-    {
-        $cacheKey = self::CACHE_MISINFO_KEY.$request->ip();
-        if ($this->cache->has($cacheKey)) {
-            return response()->json(['message' => 'Unauthorized'], 401);
+        $verified = $entry->verified;
+        $adminNote = $entry->admin_note;
+        $isAdmin = $this->isUserAdmin($collectionPointId);
+        if ($isAdmin) {
+            $verified = true;
+            $adminNote = $request->get('admin_note', $entry->admin_note);
         }
-        $expiresAt = Carbon::now()->addMinutes(10);
-        $this->cache->set($cacheKey, true, $expiresAt);
-
-        $entry = Entry::query()->findOrFail($eid);
-        $json = $entry->misinformation;
-        if ($json === "") {
-            $json = json_encode(["ips" => [], "count" => 0]);
+        else {
+            $departureTime = strtotime($request->get('departure'));
+            if ($departureTime <= strtotime($entry->arrive)+self::MIN_DURATION_ON_POINT ||
+                $departureTime > time()+self::ALLOWED_EARLIER_SUBMIT) {
+                return response()->json(['messageTranslation' => 'Nesprávne zadaný časový údaj.'], 400);
+            }
+            if ($entry->token != $request->get('token')) {
+                return response()->json(['messageTranslation' => 'Nedostatočné oprávnenie. Vaše zariadenie nedisponuje platným prístup na úpravu zvoleného času.'], 403);
+            }
         }
-        $object = json_decode($json, true);
-        $object['count'] += 1;
-        if (count($object['ips']) < 3) {
-            $object['ips'][] = $request->ip();
-        }
-        $entry->update(['misinformation' => json_encode($object)]);
-        $this->refreshCache($entry->collection_point_id);
+        $entry->update($request->merge([
+            'verified' => $verified,
+            'admin_note' => $adminNote
+        ])->only('departure', 'admin_note', 'verified'));
+        $this->refreshCache($collectionPointId);
         return response()->json($entry, 200);
     }
 
@@ -179,11 +206,13 @@ class EntryController extends Controller
     public function delete($eid, Request $request)
     {
         $entry = Entry::query()->findOrFail($eid);
-        if ($entry->token != $request->get('token')) {
+        $collectionPointId = $entry->collection_point_id;
+        if ($entry->token != $request->get('token', '-') &&
+            !$this->isUserAdmin($collectionPointId)) {
             return response()->json(['message' => 'Unauthorized'], 401);
         }
         $entry->delete();
-        $this->refreshCache($entry->collection_point_id);
+        $this->refreshCache($collectionPointId);
         return response()->json(['message' => 'Deleted Successfully.'], 200);
     }
 

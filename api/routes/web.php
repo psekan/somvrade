@@ -23,13 +23,10 @@ $router->group(['prefix' => 'api'], function () use ($router) {
     $router->post('collectionpoints/{id}/entries',  'EntryController@create');
     $router->put('entries/{eid}',  'EntryController@update');
     $router->delete('entries/{eid}',  'EntryController@delete');
-    $router->post('entries/{eid}/misinformation',  'EntryController@maskAsMisinformation');
     $router->group([
         'middleware' => 'auth',
     ], function ($router) {
-        $router->post('collectionpoints', 'CollectionPointsController@create');
-        $router->delete('collectionpoints/{id}', 'CollectionPointsController@delete');
-        $router->put('collectionpoints/{id}', 'CollectionPointsController@update');
+        $router->put('collectionpoints/{id}/break',  'CollectionPointsController@updateBreak');
     });
 
     $router->post('login', 'AuthController@login');
@@ -40,5 +37,6 @@ $router->group(['prefix' => 'api'], function () use ($router) {
         $router->post('logout', 'AuthController@logout');
         $router->post('refresh', 'AuthController@refresh');
         $router->post('me', 'AuthController@me');
+        $router->get('collectionpoints',  'CollectionPointsController@showMine');
     });
 });

@@ -15,13 +15,18 @@ class CreateCollectionPointsTable extends Migration
     {
         Schema::create('collection_points', function (Blueprint $table) {
             $table->id();
-            $table->string('code', 10)->nullable();
-            $table->string('region', 4)->index('region');
-            $table->string('county', 60)->index('county');
-            $table->string('city', 60)->index('city');
-            $table->string('address', 150)->index('address');
-            $table->boolean('unoccupied')->default(false);
+            $table->string('region', 4);
+            $table->string('county', 60);
+            $table->string('city', 60);
+            $table->string('address', 150);
+            $table->integer('teams')->unsigned()->default(1);
+            $table->integer('external_system_id')->unsigned()->default(0);
+            $table->time('break_start')->nullable();
+            $table->time('break_stop')->nullable();
+            $table->string('break_note', 250)->nullable();
             $table->timestamps();
+
+            $table->index(['region', 'county', 'city', 'address']);
         });
     }
 

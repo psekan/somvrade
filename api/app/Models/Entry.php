@@ -21,7 +21,7 @@ class Entry extends Model
      * @var array
      */
     protected $fillable = [
-        'collection_point_id', 'arrive', 'length', 'departure', 'ipaddress', 'misinformation', 'token'
+        'collection_point_id', 'day', 'arrive', 'length', 'departure', 'admin_note', 'token', 'verified'
     ];
 
     /**
@@ -32,19 +32,6 @@ class Entry extends Model
     protected $hidden = [
         'created_at',
         'updated_at',
-        'ipaddress',
-        'misinformation'
+        'day'
     ];
-
-    /**
-     * @return int|mixed
-     */
-    public function getMisinfoCountAttribute() {
-        $json = $this->misinformation;
-        if ($json === "") {
-            return 0;
-        }
-        $object = json_decode($json, true);
-        return $object['count'];
-    }
 }

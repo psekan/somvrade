@@ -3,13 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\CollectionPoints;
-use Exception;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Cache\Repository as Cache;
-use Illuminate\Validation\ValidationException;
 use Psr\SimpleCache\InvalidArgumentException;
 
 /**
@@ -36,20 +35,12 @@ class CollectionPointsController extends Controller
     }
 
     /**
+     * Refresh cache of a region collection points and return new value
      * @param $region
      * @return array|Builder[]|Collection
      * @throws InvalidArgumentException
      */
-    public function refreshCache($region) {
-        if ($region == '') {
-            $collectionPoint = CollectionPoints::query()
-                ->orderBy('county')
-                ->orderBy('city')
-                ->orderBy('address')
-                ->get();
-            $this->cache->set(self::CACHE_KEY, $collectionPoint);
-            return $collectionPoint;
-        }
+    private function refreshCache($region) {
         if (!in_array($region, self::REGIONS)){
             return [];
         }
@@ -64,62 +55,49 @@ class CollectionPointsController extends Controller
     }
 
     /**
+     * Get actual collection points in a region
+     * @param $region
+     * @return Collection|array
+     * @throws InvalidArgumentException
+     */
+    private function getByRegion($region) {
+        $region = strtoupper($region);
+        if (!in_array($region, self::REGIONS)){
+            return [];
+        }
+        if (!$this->cache->has(self::CACHE_KEY.$region)) {
+            return $this->refreshCache($region);
+        }
+        return $this->cache->get(self::CACHE_KEY.$region);
+    }
+
+    /**
+     * Show all collection points
      * @param Request $request
      * @return JsonResponse
      * @throws InvalidArgumentException
      */
     public function showAll(Request $request)
     {
-        if (auth()->check()) {
-            return response()->json(CollectionPoints::query()
-                ->orderBy('county')
-                ->orderBy('city')
-                ->orderBy('address')
-                ->get());
-        }
-
-        $region = strtoupper($request->get('region'));
-        if (!in_array($region, self::REGIONS)){
-            $region = '';
-        }
-        if (!$this->cache->has(self::CACHE_KEY.$region)) {
-            $collectionPoint = $this->refreshCache($region);
-        }
-        else {
-            $collectionPoint = $this->cache->get(self::CACHE_KEY.$region);
-        }
+        $collectionPoint = $this->getByRegion($request->get('region'));
         return response()->json($collectionPoint);
     }
 
     /**
-     * @return JsonResponse
-     */
-    public function showAllWaiting()
-    {
-        return response()->json(CollectionPoints::query()
-            ->where('active', false)
-            ->orderBy('county')
-            ->orderBy('city')
-            ->orderBy('district')
-            ->orderBy('place')
-            ->get());
-    }
-
-    /**
+     * Show only admin's allowed collection points
      * @param Request $request
      * @return JsonResponse
-     * @throws ValidationException
+     * @throws InvalidArgumentException
      */
-    public function create(Request $request)
+    public function showMine(Request $request)
     {
-        $this->validate($request, [
-            'county' => 'required',
-            'city' => 'required',
-            'address' => 'required',
-            'unoccupied' => 'required'
-        ]);
-        $collectionPoint = CollectionPoints::query()->create($request->merge(['active' => false])->all());
-        return response()->json($collectionPoint, 201);
+        /** @var User $user */
+        $user = auth()->user();
+        return response()->json($user->collectionPoints()
+            ->orderBy('region')
+            ->orderBy('county')
+            ->orderBy('city')
+            ->orderBy('address'));
     }
 
     /**
@@ -137,25 +115,18 @@ class CollectionPointsController extends Controller
      * @return JsonResponse
      * @throws InvalidArgumentException
      */
-    public function update($id, Request $request)
+    public function updateBreak($id, Request $request)
     {
-        $collectionPoint = CollectionPoints::query()->findOrFail($id);
-        $collectionPoint->update($request->all());
+        /** @var User $user */
+        $user = auth()->user();
+
+        /** @var CollectionPoints $collectionPoint */
+        $collectionPoint = $user->allowedCollectionPoints($id);
+        if ($collectionPoint === null) {
+            return $this->forbidden();
+        }
+        $collectionPoint->update($request->only(['break_start', 'break_stop', 'break_note']));
         $this->refreshCache($collectionPoint->region);
         return response()->json($collectionPoint, 200);
-    }
-
-    /**
-     * @param $id
-     * @return JsonResponse
-     * @throws InvalidArgumentException
-     * @throws Exception
-     */
-    public function delete($id)
-    {
-        $collectionPoint = CollectionPoints::query()->findOrFail($id);
-        $collectionPoint->delete();
-        $this->refreshCache($collectionPoint->region);
-        return response()->json(['message' => 'Deleted Successfully.'], 200);
     }
 }
