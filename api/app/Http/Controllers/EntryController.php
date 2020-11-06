@@ -78,7 +78,7 @@ class EntryController extends Controller
         if (auth()->check()) {
             /** @var User $user */
             $user = auth()->user();
-            $collectionPoint = $user->allowedCollectionPoints($id);
+            $collectionPoint = $user->allowedCollectionPoint($id);
             if ($collectionPoint !== null) {
                 return true;
             }
@@ -92,6 +92,12 @@ class EntryController extends Controller
     private function generateToken() {
         $token = openssl_random_pseudo_bytes(16);
         return bin2hex($token);
+    }
+
+    private function captchaNotValid() {
+        return response()->json([
+            'messageTranslation' => 'Nepodarilo sa nám overiť užívateľa. Prosíme, otvorte stránku ešte raz.'
+        ], 401);
     }
 
     /**
@@ -131,7 +137,7 @@ class EntryController extends Controller
         }
 
         if ($this->verifyCaptcha($request->get('recaptcha')) != true) {
-            return response()->json(['messageTranslation' => 'Nedostatočne overený užívateľ. Prosíme, otvorte si stránku ešte raz.'], 401);
+            return $this->captchaNotValid();
         }
         if (strtotime($request->get('arrive')) > time()+self::ALLOWED_EARLIER_SUBMIT && !$isAdmin) {
             return response()->json(['messageTranslation' => 'Nesprávne zadaný časový údaj.'], 400);
@@ -143,7 +149,7 @@ class EntryController extends Controller
             'token' => $this->generateToken(),
             'verified' => $verified,
             'admin_note' => $adminNote
-        ])->only(['collection_point_id', 'day', 'arrive', 'length', 'admin_note', 'token']));
+        ])->only(['collection_point_id', 'day', 'arrive', 'length', 'admin_note', 'verified', 'token']));
         $this->refreshCache($id);
         return response()->json($entry, 201);
     }
@@ -158,13 +164,11 @@ class EntryController extends Controller
     public function update($eid, Request $request)
     {
         $this->validate($request, [
-            'token' => 'required',
-            'departure' => 'required',
             'recaptcha' => 'required',
         ]);
 
         if ($this->verifyCaptcha($request->get('recaptcha')) != true) {
-            return response()->json(['messageTranslation' => 'Nedostatočne overený užívateľ. Prosíme, otvorte si stránku ešte raz.'], 401);
+            return $this->captchaNotValid();
         }
 
         $entry = Entry::query()->findOrFail($eid);
@@ -178,6 +182,10 @@ class EntryController extends Controller
             $adminNote = $request->get('admin_note', $entry->admin_note);
         }
         else {
+            $this->validate($request, [
+                'token' => 'required',
+                'departure' => 'required'
+            ]);
             $departureTime = strtotime($request->get('departure'));
             if ($departureTime <= strtotime($entry->arrive)+self::MIN_DURATION_ON_POINT ||
                 $departureTime > time()+self::ALLOWED_EARLIER_SUBMIT) {

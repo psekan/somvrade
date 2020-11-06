@@ -85,11 +85,10 @@ class CollectionPointsController extends Controller
 
     /**
      * Show only admin's allowed collection points
-     * @param Request $request
      * @return JsonResponse
      * @throws InvalidArgumentException
      */
-    public function showMine(Request $request)
+    public function showMine()
     {
         /** @var User $user */
         $user = auth()->user();
@@ -97,7 +96,7 @@ class CollectionPointsController extends Controller
             ->orderBy('region')
             ->orderBy('county')
             ->orderBy('city')
-            ->orderBy('address'));
+            ->orderBy('address')->getResults()->makeHidden('pivot'));
     }
 
     /**
@@ -121,12 +120,12 @@ class CollectionPointsController extends Controller
         $user = auth()->user();
 
         /** @var CollectionPoints $collectionPoint */
-        $collectionPoint = $user->allowedCollectionPoints($id);
+        $collectionPoint = $user->allowedCollectionPoint($id);
         if ($collectionPoint === null) {
             return $this->forbidden();
         }
         $collectionPoint->update($request->only(['break_start', 'break_stop', 'break_note']));
         $this->refreshCache($collectionPoint->region);
-        return response()->json($collectionPoint, 200);
+        return response()->json($collectionPoint->makeHidden('pivot'), 200);
     }
 }

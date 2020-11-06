@@ -25,7 +25,11 @@ class Controller extends BaseController
         ], 200);
     }
 
-    protected function forbidden() {
+    protected function unauthorized() {
         return response()->json(['message' => 'Unauthorized'], 401);
+    }
+
+    protected function forbidden() {
+        return response()->json(['message' => 'Forbidden'], 403);
     }
 }
