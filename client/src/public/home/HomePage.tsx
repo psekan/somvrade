@@ -93,6 +93,9 @@ export function HomePage() {
               description={'Chcem poznať stav'}
             />
           </Grid>
+          <Grid item md={6} xs={12}>
+            <NavLink to={`/admin`} label={'Admin'} description={'Admin'} />
+          </Grid>
         </Grid>
       </div>
       <Typography variant={'h6'}>Informácie o testovaní:</Typography>
