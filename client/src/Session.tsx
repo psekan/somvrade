@@ -3,9 +3,9 @@ import React, { useContext, useState, useMemo } from 'react';
 const defaultSession: Session = {
   isLoggedIn: false,
 };
-
+const currentDay = new Date().getDay() + 1;
 const STORAGE_KEY = '@somvrade';
-const STORAGE_KEY_COL_POINT_TOKEN = '@somvrade_cl_p_token_2';
+const STORAGE_KEY_COL_POINT_TOKEN = `@somvrade_cl_p_token_${currentDay}`;
 const STORAGE_KEY_FAVORITES = '@somvrade_favorites';
 
 const initialActions: SessionContextActions = {

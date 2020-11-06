@@ -6,7 +6,7 @@ import { Admin } from './admin';
 
 const useStyles = makeStyles({
   contact: {
-    margin: '60px 0',
+    margin: '60px 0 80px',
     textAlign: 'center',
     fontSize: '0.9rem',
     lineHeight: '1.5em',

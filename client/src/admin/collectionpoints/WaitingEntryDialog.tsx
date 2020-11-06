@@ -50,7 +50,7 @@ export function WaitingEntryDialog({
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('xs'));
 
-  const { token, refreshCaptchaToken } = useCaptchaToken();
+  const { token, refreshCaptchaToken, isLoading: isCaptchaTokenLoading } = useCaptchaToken();
 
   useEffect(() => {
     setState({ time: new Date() });
@@ -161,12 +161,17 @@ export function WaitingEntryDialog({
         />
       </DialogContent>
       {error && <Alert severity={'error'}>{error}</Alert>}
-      {isLoading && <LinearProgress />}
+      {(isLoading || isCaptchaTokenLoading) && <LinearProgress />}
       <DialogActions className={classes.dialogFooter}>
-        <Button onClick={onCancel} color="primary" disabled={isLoading}>
+        <Button onClick={onCancel} color="primary" disabled={isLoading || isCaptchaTokenLoading}>
           Späť
         </Button>
-        <Button onClick={handleEdit} color="primary" variant={'contained'} disabled={isLoading}>
+        <Button
+          onClick={handleEdit}
+          color="primary"
+          variant={'contained'}
+          disabled={isLoading || isCaptchaTokenLoading}
+        >
           Potvrdiť
         </Button>
       </DialogActions>

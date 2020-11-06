@@ -118,6 +118,7 @@ export interface BreakRequest {
   break_start: string | null;
   break_stop: string | null;
   break_note?: string | null;
+  token: string;
 }
 
 export async function setBreak(

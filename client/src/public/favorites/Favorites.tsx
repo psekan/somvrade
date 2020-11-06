@@ -24,10 +24,6 @@ const useStyles = makeStyles({
   title: {
     marginBottom: 30,
   },
-  titleWrapper: {
-    display: 'flex',
-    justifyContent: 'space-between',
-  },
 });
 
 export function Favorites() {
@@ -72,12 +68,9 @@ export function Favorites() {
 
   return (
     <>
-      <div className={classes.titleWrapper}>
-        <Typography variant={'h6'} className={classes.title}>
-          Sledované odberné miesta
-        </Typography>
-        <SocialButtons />
-      </div>
+      <Typography variant={'h6'} className={classes.title}>
+        Sledované odberné miesta
+      </Typography>
       {!favorites.length && (
         <Alert severity={'info'}>
           Žiadne sledované odberné miesta. Začať sledovať odberné miesto môžete kliknutím na ikonu{' '}
@@ -98,6 +91,7 @@ export function Favorites() {
         ))}
       </Grid>
       <BackToStartLink center />
+      {!!favorites.length && <SocialButtons />}
     </>
   );
 }

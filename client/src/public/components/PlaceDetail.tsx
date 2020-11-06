@@ -44,7 +44,7 @@ const useStyles = makeStyles({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  teamsAndSocials: {
+  teamWrapper: {
     display: 'flex',
     justifyContent: 'space-between',
     marginBottom: 10,
@@ -171,7 +171,7 @@ function PlaceDetailTable({
               </div>
             )}
           </div>
-          <div className={classes.teamsAndSocials}>
+          <div className={classes.teamWrapper}>
             <Chip
               variant={'outlined'}
               size={'small'}
@@ -179,7 +179,6 @@ function PlaceDetailTable({
               label={'Počet odberných tímov'}
               color={'primary'}
             />
-            {showSocialButtons && <SocialButtons />}
           </div>
           {detail.break_start && (
             <Alert severity={'warning'} icon={<ClockIcon />}>
@@ -203,6 +202,7 @@ function PlaceDetailTable({
           )}
         </div>
       )}
+      {showSocialButtons && <SocialButtons />}
     </>
   );
 }

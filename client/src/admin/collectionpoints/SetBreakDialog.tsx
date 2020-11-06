@@ -12,6 +12,7 @@ import { ButtonGroup, Grid, makeStyles, useMediaQuery, useTheme } from '@materia
 import { TimePicker } from '@material-ui/pickers';
 import { CollectionPointEntity, setBreak, BreakRequest } from '../../services';
 import { useSession } from '../../Session';
+import { useCaptchaToken } from '../../hooks';
 
 const useStyles = makeStyles({
   noteInput: {
@@ -54,6 +55,8 @@ export function SetBreakDialog({
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('xs'));
 
+  const { token, refreshCaptchaToken, isLoading: isCaptchaTokenLoading } = useCaptchaToken();
+
   useEffect(() => {
     setState(getInitialState(entity));
     setError('');
@@ -71,6 +74,7 @@ export function SetBreakDialog({
       break_start: formatTime(state.breakStart)!,
       break_stop: formatTime(state.breakStop)!,
       break_note: state.note,
+      token,
     });
   }
 
@@ -81,6 +85,7 @@ export function SetBreakDialog({
       break_start: null,
       break_stop: null,
       break_note: null,
+      token,
     });
   }
 
@@ -91,6 +96,7 @@ export function SetBreakDialog({
       onConfirm();
     } catch (err) {
       setError(err && err.message ? String(err.message) : 'Nastala neznáma chyba');
+      refreshCaptchaToken();
     } finally {
       setLoading(false);
     }
@@ -195,7 +201,7 @@ export function SetBreakDialog({
                 onClick={handleBreakCancel}
                 color="primary"
                 variant={'contained'}
-                disabled={isLoading}
+                disabled={isLoading || isCaptchaTokenLoading}
               >
                 Zrušiť prestávku
               </Button>
@@ -203,7 +209,7 @@ export function SetBreakDialog({
                 onClick={() => setEditingBreak(true)}
                 color="default"
                 variant={'contained'}
-                disabled={isLoading}
+                disabled={isLoading || isCaptchaTokenLoading}
               >
                 Upraviť prestávku
               </Button>
@@ -212,14 +218,19 @@ export function SetBreakDialog({
         )}
       </DialogContent>
       {error && <Alert severity={'error'}>{error}</Alert>}
-      {isLoading && <LinearProgress />}
+      {(isLoading || isCaptchaTokenLoading) && <LinearProgress />}
 
       <DialogActions className={classes.dialogFooter}>
-        <Button onClick={onCancel} color="primary" disabled={isLoading}>
+        <Button onClick={onCancel} color="primary" disabled={isLoading || isCaptchaTokenLoading}>
           Späť
         </Button>
         {editingBreak && (
-          <Button onClick={handleEdit} color="primary" variant={'contained'} disabled={isLoading}>
+          <Button
+            onClick={handleEdit}
+            color="primary"
+            variant={'contained'}
+            disabled={isLoading || isCaptchaTokenLoading}
+          >
             Potvrdiť
           </Button>
         )}
