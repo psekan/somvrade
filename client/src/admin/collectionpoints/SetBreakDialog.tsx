@@ -71,7 +71,7 @@ export function SetBreakDialog({
       await setBreak(
         entity?.id!,
         {
-          break_start: '',
+          break_start: parseTime(new Date())!,
           break_stop: '',
           break_note: '',
         },

@@ -121,9 +121,3 @@ export function EditDialog({
     </Dialog>
   );
 }
-
-/*
-
-
-  active: boolean;
-*/
