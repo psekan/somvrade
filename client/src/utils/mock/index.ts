@@ -1,10 +1,12 @@
 import mocks from './mocks';
 
-export default function mock(url: string, options?: RequestInit) {
+export default async function mock(url: string, options?: RequestInit) {
   const method = options?.method || 'GET';
-  console.log('MOCK Req:', method, url);
+  console.log('MOCK Req:', method, url, options?.body);
 
   const mockObj = mocks.find(m => m.method === method && new RegExp(m.urlMath).test(url));
+
+  await new Promise(resolve => setTimeout(resolve, 1000));
 
   if (!mockObj) {
     console.log('MOCK Res:', 'Mock not found');

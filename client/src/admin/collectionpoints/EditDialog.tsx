@@ -7,8 +7,6 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import Alert from '@material-ui/lab/Alert';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
 import { CollectionPointEntity, updateCollectionPoint } from '../../services';
 import { useSession } from '../../Session';
 
@@ -97,9 +95,9 @@ export function EditDialog({
         />
         <TextField
           {...commonInputProps}
-          name={'district'}
+          name={'region'}
           label="Okrsok"
-          value={state?.district || ''}
+          value={state?.region || ''}
           onChange={handleInputChange}
         />
         <TextField
@@ -108,16 +106,6 @@ export function EditDialog({
           label="Názov odberného miesta"
           value={state?.address || ''}
           onChange={handleInputChange}
-        />
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={state?.active}
-              onChange={evt => setState(prev => ({ ...prev, active: evt.target.checked }))}
-              name="gilad"
-            />
-          }
-          label={'Aktívne'}
         />
       </DialogContent>
       {error && <Alert severity={'error'}>{error}</Alert>}
@@ -133,9 +121,3 @@ export function EditDialog({
     </Dialog>
   );
 }
-
-/*
-
-
-  active: boolean;
-*/

@@ -4,51 +4,67 @@ import {
   TableBody,
   TableCell,
   TableContainer,
-  Paper,
   TableRow,
   makeStyles,
   TableHead,
   IconButton,
-  Divider,
   TablePagination,
+  Snackbar,
 } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import LinearProgress from '@material-ui/core/LinearProgress';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import DeleteIcon from '@material-ui/icons/Delete';
-import AcceptIcon from '@material-ui/icons/Check';
-import EditIcon from '@material-ui/icons/Edit';
-import { EditDialog } from './EditDialog';
-import {
-  useCollectionPoints,
-  CollectionPointEntity,
-  approveCollectionPoint,
-  deleteCollectionPoint,
-} from '../../services';
-import { Session, useSession } from '../../Session';
+import AddNewEntryIcon from '@material-ui/icons/AddToPhotos';
+import ClockIcon from '@material-ui/icons/QueryBuilder';
+import TextField from '@material-ui/core/TextField';
+import SearchIcon from '@material-ui/icons/SearchOutlined';
+import InfoIcon from '@material-ui/icons/ListAlt';
+import { matchSorter } from 'match-sorter';
+import { WaitingEntryDialog } from './WaitingEntryDialog';
+import { SetBreakDialog } from './SetBreakDialog';
+import { EntryDetailDialog } from './EntryDetailDialog';
+import { useCollectionPointsAdmin, CollectionPointEntity } from '../../services';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
+  container: {
+    padding: 0,
+  },
   table: {
     width: '100%',
   },
   rowActions: {
     display: 'flex',
     justifyContent: 'flex-end',
+    flexWrap: 'wrap',
   },
-});
+  searchInput: {
+    margin: '10px 0',
+    padding: '10px',
+  },
+  breakInfo: {
+    color: theme.palette.primary.main,
+  },
+  breakInfoIcon: {
+    verticalAlign: 'bottom',
+  },
+}));
 
 type CollectionPointsProps = {
-  onlyWaiting: boolean
-}
+  onlyWaiting: boolean;
+};
+
+const DEFAULT_PAGE_SIZE = 10;
 
 export function CollectionPoints(props: CollectionPointsProps) {
   const classes = useStyles();
-  const [session] = useSession();
-  const [editingEntity, setEditingEntity] = useState<CollectionPointEntity>();
-  let { isLoading, response, error, refresh } = useCollectionPoints(props.onlyWaiting);
-
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [dialogEntity, setDialogEditingEntity] = useState<{
+    entity: CollectionPointEntity;
+    dialog: 'break' | 'addentry' | 'detail';
+  }>();
+  const { isLoading, response, error, refresh } = useCollectionPointsAdmin();
+  const [filter, setFilter] = useState('');
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(DEFAULT_PAGE_SIZE);
+  const [successMessage, setSuccessMessage] = useState('');
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
@@ -59,139 +75,175 @@ export function CollectionPoints(props: CollectionPointsProps) {
     setPage(0);
   };
 
+  const data = matchSorter(response || [], filter, {
+    keys: ['county', 'city', 'district', 'address'],
+  });
+
+  const pagedData = data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+
+  const pagination = (
+    <TablePagination
+      rowsPerPageOptions={[5, 10, 25, 50, 100, 200]}
+      component="div"
+      count={data.length}
+      rowsPerPage={rowsPerPage}
+      page={page}
+      onChangePage={handleChangePage}
+      onChangeRowsPerPage={handleChangeRowsPerPage}
+      labelRowsPerPage={''}
+    />
+  );
+
   return (
     <>
-      <TableContainer component={Paper}>
+      <TableContainer className={classes.container}>
         {isLoading && <LinearProgress />}
         {error && <Alert severity={'error'}>{JSON.stringify(error)}</Alert>}
+        <div className={classes.searchInput}>
+          <TextField
+            fullWidth
+            variant={'outlined'}
+            label={'Vyhľadávanie'}
+            size={'small'}
+            InputProps={{
+              endAdornment: <SearchIcon />,
+            }}
+            onChange={evt => {
+              setFilter(evt.target.value);
+              setPage(0);
+            }}
+          />
+        </div>
+        {pagination}
         <Table className={classes.table} size="small">
           <TableHead>
             <TableRow>
-              <TableCell>Okres</TableCell>
-              <TableCell>Mesto/Obec</TableCell>
-              <TableCell>Okrsok</TableCell>
-              <TableCell>Názov odbérneho miesta</TableCell>
-              <TableCell>Status</TableCell>
+              <TableCell>Odberné miesto</TableCell>
               <TableCell align="right">Možnosti</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {(response || []).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => (
+            {pagedData.map(row => (
               <Row
                 key={row.id}
                 entity={row}
-                session={session}
-                onActionDone={refresh}
-                handleEdit={entity => setEditingEntity(entity)}
+                handleAddEntry={entity =>
+                  setDialogEditingEntity({
+                    entity,
+                    dialog: 'addentry',
+                  })
+                }
+                handleBreak={entity =>
+                  setDialogEditingEntity({
+                    entity,
+                    dialog: 'break',
+                  })
+                }
+                handleDetail={entity =>
+                  setDialogEditingEntity({
+                    entity,
+                    dialog: 'detail',
+                  })
+                }
               />
             ))}
           </TableBody>
         </Table>
+        {pagination}
       </TableContainer>
-      <TablePagination
-        rowsPerPageOptions={[5, 10, 25, 50, 100, 200]}
-        component="div"
-        count={(response || []).length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onChangePage={handleChangePage}
-        onChangeRowsPerPage={handleChangeRowsPerPage}
-      />
-      <EditDialog
-        entity={editingEntity}
-        onCancel={() => setEditingEntity(undefined)}
+      <WaitingEntryDialog
+        entity={dialogEntity?.dialog === 'addentry' ? dialogEntity.entity : undefined}
+        onCancel={() => setDialogEditingEntity(undefined)}
         onConfirm={() => {
-          setEditingEntity(undefined);
+          setDialogEditingEntity(undefined);
+          setSuccessMessage('Vaše údaje boli úspešne uložené.');
           refresh();
         }}
       />
+      <SetBreakDialog
+        entity={dialogEntity?.dialog === 'break' ? dialogEntity.entity : undefined}
+        onCancel={() => setDialogEditingEntity(undefined)}
+        onConfirm={() => {
+          setDialogEditingEntity(undefined);
+          setSuccessMessage('Vaše údaje boli úspešne uložené.');
+          refresh();
+        }}
+      />
+      <EntryDetailDialog
+        entity={dialogEntity?.dialog === 'detail' ? dialogEntity.entity : undefined}
+        onCancel={() => setDialogEditingEntity(undefined)}
+      />
+      <Snackbar
+        open={!!successMessage}
+        autoHideDuration={6000}
+        onClose={() => setSuccessMessage('')}
+      >
+        <Alert severity="success" onClose={() => setSuccessMessage('')}>
+          {successMessage}
+        </Alert>
+      </Snackbar>
     </>
   );
 }
 
 function Row({
   entity,
-  session,
-  onActionDone,
-  handleEdit,
+  handleBreak,
+  handleAddEntry,
+  handleDetail,
 }: {
   entity: CollectionPointEntity;
-  session: Session;
-  onActionDone: () => void;
-  handleEdit: (entity: CollectionPointEntity) => void;
+  handleBreak: (entity: CollectionPointEntity) => void;
+  handleAddEntry: (entity: CollectionPointEntity) => void;
+  handleDetail: (entity: CollectionPointEntity) => void;
 }) {
   const classes = useStyles();
-  const [actionLoading, setActionLoading] = useState(false);
-
-  async function handleDelete(entity: CollectionPointEntity) {
-    setActionLoading(true);
-    try {
-      await deleteCollectionPoint(entity.id, session);
-      onActionDone();
-    } finally {
-      setActionLoading(false);
-    }
-  }
-
-  async function handleApprove(entity: CollectionPointEntity) {
-    setActionLoading(true);
-    try {
-      await approveCollectionPoint(entity, session);
-      onActionDone();
-    } finally {
-      setActionLoading(false);
-    }
-  }
 
   return (
     <TableRow key={entity.id}>
       <TableCell component="th" scope="row">
         {entity.county}
-      </TableCell>
-      <TableCell component="th" scope="row">
-        {entity.city}
-      </TableCell>
-      <TableCell component="th" scope="row">
-        {entity.district}
-      </TableCell>
-      <TableCell component="th" scope="row">
-        {entity.address}
-      </TableCell>
-      <TableCell component="th" scope="row">
-        {entity.active ? 'Aktívne' : 'Neaktívne'}
+        <br />
+        {entity.region}
+        <br />
+        <strong>{entity.city}</strong>
+        <br />
+        <strong>{entity.address}</strong>
+        {entity.break_start ? (
+          <span className={classes.breakInfo}>
+            <br />
+            <ClockIcon fontSize={'small'} className={classes.breakInfoIcon} />
+            Prestávka do {entity.break_stop}
+          </span>
+        ) : (
+          ''
+        )}
       </TableCell>
       <TableCell component="th" scope="row" align="right">
-        {actionLoading && <CircularProgress size={25} />}
-        {!actionLoading && (
-          <div className={classes.rowActions}>
-            <IconButton
-              color={'primary'}
-              title={'Edituj'}
-              size={'small'}
-              onClick={() => handleEdit(entity)}
-            >
-              <EditIcon />
-            </IconButton>
-            <Divider orientation="vertical" flexItem />
-            <IconButton
-              color={'primary'}
-              title={'Aktivuj'}
-              size={'small'}
-              onClick={() => handleApprove(entity)}
-            >
-              <AcceptIcon />
-            </IconButton>
-            <Divider orientation="vertical" flexItem />
-            <IconButton
-              color={'secondary'}
-              title={'Vymaž'}
-              size={'small'}
-              onClick={() => handleDelete(entity)}
-            >
-              <DeleteIcon />
-            </IconButton>
-          </div>
-        )}
+        <div className={classes.rowActions}>
+          <IconButton
+            color={'primary'}
+            title={'Zadať počet čakajúcich'}
+            onClick={() => handleAddEntry(entity)}
+          >
+            <AddNewEntryIcon />
+          </IconButton>
+
+          <IconButton
+            color={'primary'}
+            title={'Spravovať prestávky'}
+            onClick={() => handleBreak(entity)}
+          >
+            <ClockIcon />
+          </IconButton>
+          <IconButton
+            color={'primary'}
+            title={'Spravovať prestávky'}
+            onClick={() => handleDetail(entity)}
+          >
+            <InfoIcon />
+          </IconButton>
+        </div>
       </TableCell>
     </TableRow>
   );

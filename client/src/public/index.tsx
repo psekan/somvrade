@@ -6,19 +6,8 @@ import { CheckWaiting, PlaceDetailPage as CheckWaitingPlaceDetail } from './chec
 import { SetWaiting, PlaceRegister } from './setwaiting';
 import { Favorites } from './favorites';
 import { NotFound } from './notfound';
-import { Link, Typography, makeStyles } from '@material-ui/core';
-
-const useStyles = makeStyles({
-  contact: {
-    margin: '60px 0',
-    textAlign: 'center',
-    fontSize: '0.9rem',
-    lineHeight: '1.5em',
-  },
-});
 
 export function Public() {
-  const classes = useStyles();
   return (
     <Container>
       <Switch>
@@ -54,11 +43,6 @@ export function Public() {
           <NotFound />
         </Route>
       </Switch>
-      <Typography variant={'body1'} className={classes.contact}>
-        Zaznamenali ste chybu, nenašli ste odberné miesto, alebo máte iný dotaz? Prosím, napíšte nám
-        na <Link href="mailto:info@somvrade.sk">info@somvrade.sk</Link>, alebo nám zavolajte na{' '}
-        <Link href="tel:0233070498">02/33070498</Link>, kde zistíte viac informácií.
-      </Typography>
     </Container>
   );
 }

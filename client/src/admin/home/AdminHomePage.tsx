@@ -8,20 +8,23 @@ import {
   AppBar,
   Tabs,
   Tab,
-  Box,
 } from '@material-ui/core';
 import { useSession } from '../../Session';
 import { CollectionPoints } from '../collectionpoints';
 
 const useStyles = makeStyles({
   container: {
-    marginTop: 80,
+    margin: '80px 0',
     padding: 0,
     display: 'flex',
     flexDirection: 'column',
   },
   title: {
     flexGrow: 1,
+    color: '#FFF',
+  },
+  toolbar: {
+    zIndex: 9,
   },
 });
 
@@ -43,10 +46,10 @@ export function AdminHomePage() {
 
   return (
     <>
-      <AppBar>
+      <AppBar className={classes.toolbar}>
         <Toolbar>
-          <Typography variant="h6" className={classes.title}>
-            Administrácia
+          <Typography variant="subtitle1" className={classes.title}>
+            Administrácia somvrade.sk
           </Typography>
           <Button onClick={() => sessionActions.destroySession()} color="inherit">
             Odhlásenie
@@ -54,17 +57,12 @@ export function AdminHomePage() {
         </Toolbar>
       </AppBar>
       <Paper className={classes.container}>
-        <AppBar position="static">
-          <Tabs variant={'fullWidth'} value={value} onChange={handleChange}>
-            <Tab label={'Odberné miesta'} />
-            <Tab label={'Čakajúce na schválenie'} />
-          </Tabs>
-        </AppBar>
+        <Tabs variant={'fullWidth'} value={value} onChange={handleChange}>
+          <Tab label={'Spravované odberné miesta'} />
+        </Tabs>
+
         <TabPanel value={value} index={0}>
-          <CollectionPoints onlyWaiting={false}/>
-        </TabPanel>
-        <TabPanel value={value} index={1}>
-          <CollectionPoints onlyWaiting={true}/>
+          <CollectionPoints onlyWaiting={false} />
         </TabPanel>
       </Paper>
     </>
@@ -82,11 +80,7 @@ function TabPanel(props: TabPanelProps) {
       aria-labelledby={`scrollable-auto-tab-${index}`}
       {...other}
     >
-      {value === index && (
-        <Box p={3}>
-          <Typography>{children}</Typography>
-        </Box>
-      )}
+      {value === index && children}
     </div>
   );
 }

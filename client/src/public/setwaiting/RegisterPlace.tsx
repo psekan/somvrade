@@ -32,9 +32,13 @@ export function RegisterPlace({ id, county }: RegisterPlaceProps) {
   const [isRegistering, setIsRegistering] = useState(false);
   const [registerError, setRegisterError] = useState('');
   const [, sessionActions] = useSession();
-  const [selectedDate, handleDateChange] = React.useState<Date | null>(new Date());
+  const [selectedDate, handleDateChange] = useState<Date | null>(new Date());
 
-  const { isLoading: isCaptchaLoading, token: recaptchaToken } = useCaptchaToken();
+  const {
+    isLoading: isCaptchaLoading,
+    token: recaptchaToken,
+    refreshCaptchaToken,
+  } = useCaptchaToken();
 
   async function handleFormSubmit(evt: React.FormEvent) {
     evt.preventDefault();
@@ -62,6 +66,7 @@ export function RegisterPlace({ id, county }: RegisterPlaceProps) {
         county,
       );
     } catch (err) {
+      refreshCaptchaToken();
       setIsRegistering(false);
       setRegisterError(
         err && err.messageTranslation
