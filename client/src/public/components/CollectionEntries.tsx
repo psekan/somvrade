@@ -56,6 +56,10 @@ const useStyles = makeStyles(theme => ({
       background: theme.palette.secondary.light,
     },
   },
+  adminVerifiedColInfo: {
+    fontSize: '0.6rem',
+    lineHeight: '1em',
+  },
 }));
 
 interface CollectionEntriesProps {
@@ -139,8 +143,13 @@ export function CollectionEntries({
                 <TableCell component="th" scope="row" align={'center'}>
                   {row.length}
                 </TableCell>
-                <TableCell component="th" scope="row" align={'right'}>
-                  {formatTime(row.departure) || 'Čaká sa'}{' '}
+                <TableCell
+                  component="th"
+                  scope="row"
+                  align={'right'}
+                  className={classNames(row.verified && classes.adminVerifiedColInfo)}
+                >
+                  {row.verified ? 'Zadané administrátorom' : formatTime(row.departure) || 'Čaká sa'}
                 </TableCell>
               </TableRow>
             ))}

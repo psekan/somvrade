@@ -2,80 +2,17 @@ import { useFetch } from '../hooks';
 import { fetchJson } from '../utils';
 import { useSession, Session } from '../Session';
 
-interface LoginResponse {
-  token: string;
-  token_type: string;
-  expires_in: number;
-}
-
-export function login(username: string, password: string): Promise<LoginResponse> {
-  let formData = new FormData();
-  formData.append('email', username);
-  formData.append('password', password);
-
-  return fetchJson('/api/login', {
-    method: 'POST',
-    body: formData,
-  });
-}
-
 export interface CollectionPointEntity {
   id: string;
   county: string;
   city: string;
-  district: string;
+  region: string;
   address: string;
-  active: boolean;
   teams?: number;
-}
-
-export function useCollectionPoints(onlyWaiting: boolean) {
-  const [session] = useSession();
-
-  return useFetch<CollectionPointEntity[]>(
-    '/api/collectionpoints' + (onlyWaiting ? '/waiting' : ''),
-    withSessionHeaders(session),
-  );
-}
-
-export async function deleteCollectionPoint(id: string, session: Session): Promise<LoginResponse> {
-  return fetchJson(`/api/collectionpoints/${id}`, {
-    method: 'DELETE',
-    ...withSessionHeaders(session),
-  });
-}
-
-export async function approveCollectionPoint(
-  entity: CollectionPointEntity,
-  session: Session,
-): Promise<LoginResponse> {
-  entity.active = !entity.active;
-  return fetchJson(`/api/collectionpoints/${entity.id}`, {
-    method: 'PUT',
-    body: JSON.stringify(entity),
-    ...withSessionHeaders(session),
-  });
-}
-
-export async function updateCollectionPoint(
-  entity: CollectionPointEntity,
-  session: Session,
-): Promise<LoginResponse> {
-  return fetchJson(`/api/collectionpoints/${entity.id}`, {
-    method: 'PUT',
-    body: JSON.stringify(entity),
-    ...withSessionHeaders(session),
-  });
-}
-
-function withSessionHeaders(session: Session) {
-  return {
-    headers: {
-      Authorization: `${session.token?.tokenType} ${session.token?.accessToken}`,
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-    },
-  };
+  external_system_id?: 0 | 1 | 2;
+  break_start?: string | null;
+  break_stop?: string | null;
+  break_note?: string | null;
 }
 
 export function useCollectionPointsPublic(county: string) {
@@ -88,11 +25,13 @@ export function useCollectionPointsPublic(county: string) {
 
 export interface CollectionPointEntry {
   id: string;
+  collection_point_id: string;
   arrive: string;
   departure: string;
   token: string;
   length: number;
   verified?: boolean;
+  admin_note?: string | null;
 }
 
 export function useCollectionPointEntries(id: string) {
@@ -103,6 +42,7 @@ export interface RegisterToCollectionPointRequest {
   arrive: string;
   length: number;
   recaptcha: string;
+  admin_note?: string | null;
 }
 
 export interface RegisterToCollectionPointResponse {
@@ -116,6 +56,7 @@ export interface RegisterToCollectionPointResponse {
 export async function registerToCollectionPoint(
   collectionPointId: string,
   entity: RegisterToCollectionPointRequest,
+  session?: Session,
 ): Promise<RegisterToCollectionPointResponse> {
   return fetchJson(`/api/collectionpoints/${collectionPointId}/entries`, {
     method: 'POST',
@@ -123,6 +64,7 @@ export async function registerToCollectionPoint(
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/json',
+      ...sessionHeaders(session),
     },
   });
 }
@@ -141,4 +83,78 @@ export async function updateDeparture(
       'Content-Type': 'application/json',
     },
   });
+}
+
+/**
+ * ADMIN
+ */
+
+interface LoginResponse {
+  token: string;
+  token_type: string;
+  expires_in: number;
+}
+
+export function login(username: string, password: string): Promise<LoginResponse> {
+  let formData = new FormData();
+  formData.append('email', username);
+  formData.append('password', password);
+
+  return fetchJson('/api/login', {
+    method: 'POST',
+    body: formData,
+  });
+}
+
+export function useCollectionPointsAdmin() {
+  const [session] = useSession();
+  return useFetch<CollectionPointEntity[]>(`/api/auth/collectionpoints`, {
+    method: 'GET',
+    ...withSessionHeaders(session),
+  });
+}
+
+interface BreakRequest {
+  break_start: string;
+  break_stop: string;
+  break_note?: string;
+}
+
+export async function setBreak(
+  id: string,
+  req: BreakRequest,
+  session: Session,
+): Promise<LoginResponse> {
+  return fetchJson(`/api/collectionpoints/${id}/break`, {
+    method: 'PUT',
+    body: JSON.stringify(req),
+    ...withSessionHeaders(session),
+  });
+}
+
+export async function updateCollectionPoint(
+  entity: CollectionPointEntity,
+  session: Session,
+): Promise<LoginResponse> {
+  return fetchJson(`/api/collectionpoints/${entity.id}`, {
+    method: 'PUT',
+    body: JSON.stringify(entity),
+    ...withSessionHeaders(session),
+  });
+}
+
+function withSessionHeaders(session: Session) {
+  return {
+    headers: sessionHeaders(session),
+  };
+}
+
+function sessionHeaders(session?: Session) {
+  return (
+    session && {
+      Authorization: `${session.token?.tokenType} ${session.token?.accessToken}`,
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    }
+  );
 }

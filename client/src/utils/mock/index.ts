@@ -2,7 +2,7 @@ import mocks from './mocks';
 
 export default function mock(url: string, options?: RequestInit) {
   const method = options?.method || 'GET';
-  console.log('MOCK Req:', method, url);
+  console.log('MOCK Req:', method, url, options?.body);
 
   const mockObj = mocks.find(m => m.method === method && new RegExp(m.urlMath).test(url));
 
