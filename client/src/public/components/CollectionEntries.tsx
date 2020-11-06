@@ -47,7 +47,7 @@ const useStyles = makeStyles(theme => ({
     padding: 20,
   },
   infoIconSmall: {
-    fontSize: 14,
+    fontSize: 13,
     cursor: 'pointer',
     verticalAlign: 'middle',
   },

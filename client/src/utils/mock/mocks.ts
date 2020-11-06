@@ -120,14 +120,15 @@ function generateEntries(count = Math.ceil(Math.random() * 40)) {
   const entries = [];
   for (let i = 0; i < count; i++) {
     const arrivedSub = Math.ceil(Math.random() * 400000 * (count - i));
+    const isVerified = i % 6 === 0;
     entries.push({
       ...template,
       id: i,
       length: Math.ceil(Math.random() * 100),
       arrive: format(new Date(Date.now() - arrivedSub), 'HH:mm'),
       departure: format(new Date(Date.now() - arrivedSub + 1000000), 'HH:mm'),
-      verified: i % 6 === 0,
-      admin_note: i % 2 === 0 ? 'Prestavka o 10:15 do 10:45.' : null,
+      verified: isVerified,
+      admin_note: isVerified && i % 2 === 0 ? 'Prestavka o 10:15 do 10:45.' : null,
     });
   }
 

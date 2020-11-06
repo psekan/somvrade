@@ -8,6 +8,7 @@ import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import FaceOutlinedIcon from '@material-ui/icons/BookmarkBorder';
 import FavoriteIcon from '@material-ui/icons/Bookmark';
+import ClockIcon from '@material-ui/icons/QueryBuilder';
 import Avatar from '@material-ui/core/Avatar';
 
 import {
@@ -20,6 +21,7 @@ import { CollectionEntries } from '../components/CollectionEntries';
 import { useSession } from '../../Session';
 import { MAX_FAVORITES } from '../../constants';
 import { SocialButtons } from '../components/SocialButtons';
+import { AlertTitle } from '@material-ui/lab';
 
 const useStyles = makeStyles({
   placeTitle: {
@@ -47,6 +49,10 @@ const useStyles = makeStyles({
     justifyContent: 'space-between',
     marginBottom: 10,
     alignItems: 'center',
+  },
+  alertBreakTitle: {
+    fontSize: '0.9rem',
+    margin: 0,
   },
 });
 
@@ -175,6 +181,14 @@ function PlaceDetailTable({
             />
             {showSocialButtons && <SocialButtons />}
           </div>
+          {detail.break_start && (
+            <Alert severity={'warning'} icon={<ClockIcon />}>
+              <AlertTitle className={classes.alertBreakTitle}>
+                Nahlásená prestávka - {detail.break_start} do {detail.break_stop}
+              </AlertTitle>
+              {detail.break_note || ''}
+            </Alert>
+          )}
           <CollectionEntries className={classes.table} limitTable={limitTable} data={response} />
           {!session.isRegistered && !adminView && (
             <Button

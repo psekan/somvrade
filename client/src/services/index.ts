@@ -19,7 +19,7 @@ export function useCollectionPointsPublic(county: string) {
   return useFetch<CollectionPointEntity[]>(
     `/api/collectionpoints?region=${county}`,
     undefined,
-    900,
+    300,
   );
 }
 

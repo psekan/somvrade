@@ -50,7 +50,7 @@ export function WaitingEntryDialog({
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('xs'));
 
-  const { token } = useCaptchaToken();
+  const { token, refreshCaptchaToken } = useCaptchaToken();
 
   useEffect(() => {
     setState({ time: new Date() });
@@ -75,6 +75,7 @@ export function WaitingEntryDialog({
       );
       onConfirm();
     } catch (err) {
+      refreshCaptchaToken();
       setError(err && err.message ? String(err.message) : 'Nastala neznáma chyba');
     } finally {
       setLoading(false);

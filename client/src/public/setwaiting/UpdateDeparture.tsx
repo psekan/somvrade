@@ -26,9 +26,13 @@ export function UpdateDeparture() {
   const [isRegistering, setIsRegistering] = useState(false);
   const [registerError, setRegisterError] = useState('');
   const [session, sessionActions] = useSession();
-  const [selectedDate, handleDateChange] = React.useState<Date | null>(new Date());
+  const [selectedDate, handleDateChange] = useState<Date | null>(new Date());
 
-  const { isLoading: isCaptchaLoading, token: recaptchaToken } = useCaptchaToken();
+  const {
+    isLoading: isCaptchaLoading,
+    token: recaptchaToken,
+    refreshCaptchaToken,
+  } = useCaptchaToken();
 
   async function handleFormSubmit(evt: React.FormEvent) {
     evt.preventDefault();
@@ -48,6 +52,7 @@ export function UpdateDeparture() {
       );
       sessionActions.completeCollectionPoint();
     } catch (err) {
+      refreshCaptchaToken();
       setIsRegistering(false);
       setRegisterError(
         err && err.messageTranslation
