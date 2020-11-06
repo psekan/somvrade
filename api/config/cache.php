@@ -17,11 +17,15 @@ return [
             ],
             'servers' => [
                 [
-                    'host' => env('MEMCACHED_HOST', 'memcached.internal.dev.demo.lablabs.io'),
+                    'host' => env('MEMCACHED_HOST', ''),
                     'port' => env('MEMCACHED_PORT', 11211),
                     'weight' => 100,
                 ],
             ],
+        ],
+        'file' => [
+            'driver' => 'file',
+            'path' => storage_path('framework/cache/data'),
         ],
     ],
     'prefix' => env(

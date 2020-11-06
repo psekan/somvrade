@@ -10,7 +10,6 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Cache\Repository as Cache;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Psr\SimpleCache\InvalidArgumentException;
@@ -131,7 +130,7 @@ class EntryController extends Controller
             $adminNote = $request->get('admin_note', '');
         }
 
-        if ($this->verifyCaptcha($request->get('recaptcha'),$request->ip()) != true) {
+        if ($this->verifyCaptcha($request->get('recaptcha')) != true) {
             return response()->json(['messageTranslation' => 'Nedostatočne overený užívateľ. Prosíme, otvorte si stránku ešte raz.'], 401);
         }
         if (strtotime($request->get('arrive')) > time()+self::ALLOWED_EARLIER_SUBMIT && !$isAdmin) {
@@ -164,7 +163,7 @@ class EntryController extends Controller
             'recaptcha' => 'required',
         ]);
 
-        if ($this->verifyCaptcha($request->get('recaptcha'),$request->ip()) != true) {
+        if ($this->verifyCaptcha($request->get('recaptcha')) != true) {
             return response()->json(['messageTranslation' => 'Nedostatočne overený užívateľ. Prosíme, otvorte si stránku ešte raz.'], 401);
         }
 
@@ -218,10 +217,9 @@ class EntryController extends Controller
 
     /**
      * @param $token
-     * @param $ip
      * @return bool
      */
-    private function verifyCaptcha($token, $ip) {
+    private function verifyCaptcha($token) {
         $secret = env('RECAPTCHA', '');
         if ($secret === 'disabled') {
             return true;
@@ -231,7 +229,7 @@ class EntryController extends Controller
             return false;
         }
         $recaptcha = new ReCaptcha($secret);
-        $resp = $recaptcha->verify($token, $ip);
+        $resp = $recaptcha->verify($token);
         return $resp->isSuccess();
     }
 }
