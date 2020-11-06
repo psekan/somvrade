@@ -8,11 +8,11 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import Alert from '@material-ui/lab/Alert';
 import AddNewEntryIcon from '@material-ui/icons/AddToPhotos';
-import { CollectionPointEntity, registerToCollectionPoint } from '../../services';
-import { useSession } from '../../Session';
-import { Grid, makeStyles } from '@material-ui/core';
+import { Grid, makeStyles, useMediaQuery, useTheme } from '@material-ui/core';
 import { TimePicker } from '@material-ui/pickers';
 import { useCaptchaToken } from '../../hooks';
+import { CollectionPointEntity, registerToCollectionPoint } from '../../services';
+import { useSession } from '../../Session';
 
 const useStyles = makeStyles({
   noteInput: {
@@ -47,6 +47,8 @@ export function WaitingEntryDialog({
   });
   const [isLoading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('xs'));
 
   const { token } = useCaptchaToken();
 
@@ -105,7 +107,12 @@ export function WaitingEntryDialog({
   }
 
   return (
-    <Dialog open={!!entity} onClose={onCancel} aria-labelledby="form-dialog-title" fullScreen>
+    <Dialog
+      open={!!entity}
+      onClose={onCancel}
+      aria-labelledby="form-dialog-title"
+      fullScreen={isMobile}
+    >
       <DialogTitle>
         <AddNewEntryIcon /> Zadať počet čakajúcich pre odberné miesto{' '}
         <i>
@@ -155,10 +162,10 @@ export function WaitingEntryDialog({
       {error && <Alert severity={'error'}>{error}</Alert>}
       {isLoading && <LinearProgress />}
       <DialogActions className={classes.dialogFooter}>
-        <Button onClick={onCancel} color="primary">
-          Zrušiť
+        <Button onClick={onCancel} color="primary" disabled={isLoading}>
+          Späť
         </Button>
-        <Button onClick={handleEdit} color="primary" variant={'contained'}>
+        <Button onClick={handleEdit} color="primary" variant={'contained'} disabled={isLoading}>
           Potvrdiť
         </Button>
       </DialogActions>

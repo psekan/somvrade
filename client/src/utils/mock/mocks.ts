@@ -44,6 +44,11 @@ const mocks = [
       expires_in: 33,
     }),
   },
+  {
+    urlMath: '/api/collectionpoints/[^/]*/break',
+    method: 'PUT',
+    response: () => ({}),
+  },
 ];
 
 function getCollectionPoints(): CollectionPointEntity[] {
@@ -110,6 +115,7 @@ function generateEntries(count = Math.ceil(Math.random() * 40)) {
     length: 10,
     verified: false,
     collection_point_id: '0',
+    admin_note: null,
   };
   const entries = [];
   for (let i = 0; i < count; i++) {
@@ -121,6 +127,7 @@ function generateEntries(count = Math.ceil(Math.random() * 40)) {
       arrive: format(new Date(Date.now() - arrivedSub), 'HH:mm'),
       departure: format(new Date(Date.now() - arrivedSub + 1000000), 'HH:mm'),
       verified: i % 6 === 0,
+      admin_note: i % 2 === 0 ? 'Prestavka o 10:15 do 10:45.' : null,
     });
   }
 

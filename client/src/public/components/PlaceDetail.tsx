@@ -57,6 +57,7 @@ interface PlaceDetailProps {
   limitTable?: number;
   className?: string;
   showSocialButtons?: boolean;
+  adminView?: boolean;
 }
 
 export function PlaceDetail({
@@ -66,6 +67,7 @@ export function PlaceDetail({
   limitTable,
   className,
   showSocialButtons,
+  adminView,
 }: PlaceDetailProps) {
   const classes = useStyles();
   const history = useHistory();
@@ -97,6 +99,7 @@ export function PlaceDetail({
           className={className}
           detail={detail}
           showSocialButtons={showSocialButtons}
+          adminView={adminView}
         />
       )}
     </div>
@@ -109,6 +112,7 @@ function PlaceDetailTable({
   id,
   limitTable,
   showSocialButtons,
+  adminView,
 }: { detail: CollectionPointEntity } & PlaceDetailProps) {
   const classes = useStyles();
 
@@ -119,43 +123,47 @@ function PlaceDetailTable({
       {!isLoading && error && <ErrorHandler refresh={refresh} />}
       {isLoading && (
         <>
-          <PlaceName county={county} id={id} detail={detail} />
+          <PlaceName county={county} id={id} detail={detail} adminView={adminView} />
           <LinearProgress />
         </>
       )}
       {!isLoading && (
         <div>
           <div className={classes.locationContainer}>
-            <PlaceName county={county} id={id} detail={detail} />
-            <div style={{ textAlign: 'right' }}>
-              {session.favorites?.some(it => it.county === county && it.entryId === id) ? (
-                <IconButton
-                  onClick={() => sessionActions.setFavorite(county, id)}
-                  title={'Odstrániť zo sledovaných odberných miest'}
-                >
-                  <FavoriteIcon />
-                </IconButton>
-              ) : (
-                <Badge
-                  badgeContent={
-                    session.favorites && session.favorites.length > 0
-                      ? MAX_FAVORITES - session.favorites.length
-                      : MAX_FAVORITES
-                  }
-                  color="primary"
-                  overlap="circle"
-                >
+            <PlaceName county={county} id={id} detail={detail} adminView={adminView} />
+            {!adminView && (
+              <div style={{ textAlign: 'right' }}>
+                {session.favorites?.some(it => it.county === county && it.entryId === id) ? (
                   <IconButton
                     onClick={() => sessionActions.setFavorite(county, id)}
-                    title={'Pridať do sledovaných odberných miest'}
-                    color="primary"
-                    disabled={session.favorites ? session.favorites.length >= MAX_FAVORITES : false}
+                    title={'Odstrániť zo sledovaných odberných miest'}
                   >
-                    <FaceOutlinedIcon />
+                    <FavoriteIcon />
                   </IconButton>
-                </Badge>
-              )}
-            </div>
+                ) : (
+                  <Badge
+                    badgeContent={
+                      session.favorites && session.favorites.length > 0
+                        ? MAX_FAVORITES - session.favorites.length
+                        : MAX_FAVORITES
+                    }
+                    color="primary"
+                    overlap="circle"
+                  >
+                    <IconButton
+                      onClick={() => sessionActions.setFavorite(county, id)}
+                      title={'Pridať do sledovaných odberných miest'}
+                      color="primary"
+                      disabled={
+                        session.favorites ? session.favorites.length >= MAX_FAVORITES : false
+                      }
+                    >
+                      <FaceOutlinedIcon />
+                    </IconButton>
+                  </Badge>
+                )}
+              </div>
+            )}
           </div>
           <div className={classes.teamsAndSocials}>
             <Chip
@@ -168,7 +176,7 @@ function PlaceDetailTable({
             {showSocialButtons && <SocialButtons />}
           </div>
           <CollectionEntries className={classes.table} limitTable={limitTable} data={response} />
-          {!session.isRegistered && (
+          {!session.isRegistered && !adminView && (
             <Button
               component={RouterLink}
               variant={'contained'}
@@ -189,16 +197,22 @@ function PlaceName({
   detail,
   county,
   id,
+  adminView,
 }: {
   detail: CollectionPointEntity;
   county: string;
   id: string;
+  adminView?: boolean;
 }) {
   const classes = useStyles();
   return (
     <Typography variant={'subtitle1'} gutterBottom className={classes.placeTitle}>
       <PlaceIcon fontSize={'small'} />{' '}
-      <RouterLink to={`/aktualne-pocty-cakajucich/${county}/${id}`}>{detail.address}</RouterLink>{' '}
+      {adminView ? (
+        detail.address
+      ) : (
+        <RouterLink to={`/aktualne-pocty-cakajucich/${county}/${id}`}>{detail.address}</RouterLink>
+      )}
     </Typography>
   );
 }

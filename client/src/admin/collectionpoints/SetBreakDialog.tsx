@@ -8,10 +8,10 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import Alert from '@material-ui/lab/Alert';
 import ClockIcon from '@material-ui/icons/QueryBuilder';
-import { CollectionPointEntity, setBreak } from '../../services';
-import { useSession } from '../../Session';
-import { ButtonGroup, Grid, makeStyles } from '@material-ui/core';
+import { ButtonGroup, Grid, makeStyles, useMediaQuery, useTheme } from '@material-ui/core';
 import { TimePicker } from '@material-ui/pickers';
+import { CollectionPointEntity, setBreak, BreakRequest } from '../../services';
+import { useSession } from '../../Session';
 
 const useStyles = makeStyles({
   noteInput: {
@@ -29,8 +29,8 @@ const useStyles = makeStyles({
 });
 
 interface ModalState {
-  time?: Date | null;
-  waitingnumber?: number;
+  breakStart?: Date | null;
+  breakStop?: Date | null;
   note?: string;
 }
 
@@ -47,36 +47,47 @@ export function SetBreakDialog({
 }>) {
   const classes = useStyles();
   const [session] = useSession();
-  const [state, setState] = useState<ModalState>({
-    time: new Date(),
-  });
+  const [state, setState] = useState<ModalState>(getInitialState(entity));
   const [isLoading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [editingBreak, setEditingBreak] = useState(!entity?.break_start);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('xs'));
 
   useEffect(() => {
-    setState({ time: new Date() });
+    setState(getInitialState(entity));
     setError('');
+    setEditingBreak(!entity?.break_start);
   }, [entity]);
 
-  async function handleEdit(evt: React.FormEvent) {
+  function handleEdit(evt: React.FormEvent) {
     evt.stopPropagation();
     evt.preventDefault();
 
-    console.log(evt);
     if (!validate()) {
       return;
     }
+    sendBreakData({
+      break_start: formatTime(state.breakStart)!,
+      break_stop: formatTime(state.breakStop)!,
+      break_note: state.note,
+    });
+  }
+
+  function handleBreakCancel(evt: React.FormEvent) {
+    evt.stopPropagation();
+    evt.preventDefault();
+    sendBreakData({
+      break_start: null,
+      break_stop: null,
+      break_note: null,
+    });
+  }
+
+  async function sendBreakData(breakReq: BreakRequest) {
     setLoading(true);
     try {
-      await setBreak(
-        entity?.id!,
-        {
-          break_start: parseTime(new Date())!,
-          break_stop: '',
-          break_note: '',
-        },
-        session,
-      );
+      await setBreak(entity?.id!, breakReq, session);
       onConfirm();
     } catch (err) {
       setError(err && err.message ? String(err.message) : 'Nastala neznáma chyba');
@@ -86,8 +97,7 @@ export function SetBreakDialog({
   }
 
   function validate() {
-    console.log(state);
-    let mandatoryFilled = !!state.time && !!state.waitingnumber;
+    let mandatoryFilled = !!state.breakStart && !!state.breakStop;
 
     if (!mandatoryFilled) {
       setError('Začiatok a koniec prestávky sú povinné');
@@ -112,7 +122,12 @@ export function SetBreakDialog({
   }
 
   return (
-    <Dialog open={!!entity} onClose={onCancel} aria-labelledby="form-dialog-title" fullScreen>
+    <Dialog
+      open={!!entity}
+      onClose={onCancel}
+      aria-labelledby="form-dialog-title"
+      fullScreen={isMobile}
+    >
       <DialogTitle>
         <ClockIcon /> Zadať prestávku pre odberné miesto{' '}
         <i>
@@ -120,7 +135,7 @@ export function SetBreakDialog({
         </i>
       </DialogTitle>
       <DialogContent>
-        {!entity?.break_start ? (
+        {editingBreak ? (
           <>
             <Grid container justify={'center'} spacing={2}>
               <Grid item md={4} xs={6}>
@@ -128,11 +143,11 @@ export function SetBreakDialog({
                   name={'time'}
                   label={'Začiatok prestávky'}
                   ampm={false}
-                  value={state.time}
+                  value={state.breakStart}
                   onChange={time =>
                     setState({
                       ...state,
-                      time,
+                      breakStart: time,
                     })
                   }
                   minutesStep={5}
@@ -144,11 +159,11 @@ export function SetBreakDialog({
                   name={'time'}
                   label={'Koniec prestávky'}
                   ampm={false}
-                  value={state.time}
+                  value={state.breakStop}
                   onChange={time =>
                     setState({
                       ...state,
-                      time,
+                      breakStop: time,
                     })
                   }
                   minutesStep={5}
@@ -176,10 +191,20 @@ export function SetBreakDialog({
               Pre vybrané odberné miesto je prestávka už zadaná. Chcete ju upraviť alebo zrusiť?
             </Alert>
             <ButtonGroup className={classes.dialogCancelBreakButtons}>
-              <Button onClick={handleEdit} color="primary" variant={'contained'}>
+              <Button
+                onClick={handleBreakCancel}
+                color="primary"
+                variant={'contained'}
+                disabled={isLoading}
+              >
                 Zrušiť prestávku
               </Button>
-              <Button onClick={handleEdit} color="primary" variant={'contained'}>
+              <Button
+                onClick={() => setEditingBreak(true)}
+                color="default"
+                variant={'contained'}
+                disabled={isLoading}
+              >
                 Upraviť prestávku
               </Button>
             </ButtonGroup>
@@ -190,11 +215,11 @@ export function SetBreakDialog({
       {isLoading && <LinearProgress />}
 
       <DialogActions className={classes.dialogFooter}>
-        <Button onClick={onCancel} color="primary">
+        <Button onClick={onCancel} color="primary" disabled={isLoading}>
           Späť
         </Button>
-        {!entity?.break_start && (
-          <Button onClick={handleEdit} color="primary" variant={'contained'}>
+        {editingBreak && (
+          <Button onClick={handleEdit} color="primary" variant={'contained'} disabled={isLoading}>
             Potvrdiť
           </Button>
         )}
@@ -203,6 +228,24 @@ export function SetBreakDialog({
   );
 }
 
-function parseTime(date?: Date | null) {
+function getInitialState(entity?: CollectionPointEntity): ModalState {
+  return {
+    breakStart: parseTime(entity?.break_start) || new Date(),
+    breakStop: parseTime(entity?.break_start) || new Date(),
+  };
+}
+
+function formatTime(date?: Date | null) {
   return date ? date.getHours() + ':' + date.getMinutes() : undefined;
+}
+
+function parseTime(time?: string | null) {
+  if (time) {
+    const now = new Date();
+    const pair = time.split(':').map(it => Number(it));
+    now.setHours(pair[0]);
+    now.setMinutes(pair[1]);
+    return now;
+  }
+  return undefined;
 }

@@ -12,6 +12,7 @@ import ArrowDown from '@material-ui/icons/ArrowDownward';
 import ArrowUp from '@material-ui/icons/ArrowUpward';
 import InfoIcon from '@material-ui/icons/InfoRounded';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import MessageIcon from '@material-ui/icons/Message';
 import Backdrop from '@material-ui/core/Backdrop';
 import isAfter from 'date-fns/isAfter';
 import setMinutes from 'date-fns/setMinutes';
@@ -36,6 +37,13 @@ const useStyles = makeStyles(theme => ({
   messageContent: {
     maxWidth: 500,
     textAlign: 'center',
+    padding: 20,
+  },
+  messageContentAdditional: {
+    marginTop: 20,
+    background: '#FFF',
+    color: '#000',
+    borderRadius: 20,
     padding: 20,
   },
   infoIconSmall: {
@@ -81,7 +89,10 @@ export function CollectionEntries({
 }: CollectionEntriesProps) {
   const classes = useStyles();
   const [tableCollabsed, setTableCollapsed] = useState(true);
-  const [infoMessage, setInfoMessage] = useState<string>();
+  const [infoMessage, setInfoMessage] = useState<{
+    message: string;
+    additionalInfo?: string | null;
+  }>();
   const dataToDisplay = (limitTable ? data?.slice(0, limitTable) : data) || [];
   const dataSize = (dataToDisplay || []).length;
   const theme = useTheme();
@@ -96,8 +107,10 @@ export function CollectionEntries({
           <Typography
             variant={'h6'}
             onClick={() =>
-              setInfoMessage(`Počet čakajúcich sa snažíme zobraziť vždy podľa posledného záznamu od administratívneho pracovníka z danného odberného miesta za poslednú hodinu. 
-              Ak takýto záznam neexistuje, vypočítavame ho na základe údajov od ostatných používateľov.`)
+              setInfoMessage({
+                message: `Počet čakajúcich sa snažíme zobraziť vždy podľa posledného záznamu od administratívneho pracovníka z danného odberného miesta za poslednú hodinu. 
+              Ak takýto záznam neexistuje, vypočítavame ho na základe údajov od ostatných používateľov.`,
+              })
             }
           >
             Približný počet čakajúcich <InfoIcon className={classes.infoIconSmall} />
@@ -130,15 +143,17 @@ export function CollectionEntries({
                 className={classNames(row.verified ? classes.verified : undefined)}
                 onClick={() => {
                   if (row.verified) {
-                    setInfoMessage(
-                      `Záznam uložený administratívnym pracovníkom priamo z daného odberného miesta.`,
-                    );
+                    setInfoMessage({
+                      message: `Záznam uložený administratívnym pracovníkom priamo z daného odberného miesta.`,
+                      additionalInfo: row.admin_note,
+                    });
                   }
                 }}
               >
                 <TableCell component="th" scope="row">
                   {formatTime(row.arrive)}{' '}
                   {row.verified && <CheckCircleIcon className={classes.infoIconSmall} />}
+                  {row.admin_note && <MessageIcon className={classes.infoIconSmall} />}
                 </TableCell>
                 <TableCell component="th" scope="row" align={'center'}>
                   {row.length}
@@ -181,7 +196,11 @@ export function CollectionEntries({
       >
         <div className={classes.messageContent}>
           <InfoIcon className={classes.infoIconLarge} />
-          <div>{infoMessage}</div>
+          <div>{infoMessage?.message}</div>
+          <div className={classes.messageContentAdditional}>
+            Dotatočná informácia: <br />
+            {infoMessage?.additionalInfo}
+          </div>
         </div>
       </Backdrop>
     </div>

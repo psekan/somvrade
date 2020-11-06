@@ -114,10 +114,10 @@ export function useCollectionPointsAdmin() {
   });
 }
 
-interface BreakRequest {
-  break_start: string;
-  break_stop: string;
-  break_note?: string;
+export interface BreakRequest {
+  break_start: string | null;
+  break_stop: string | null;
+  break_note?: string | null;
 }
 
 export async function setBreak(

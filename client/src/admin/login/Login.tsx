@@ -6,6 +6,7 @@ import Paper from '@material-ui/core/Paper';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import { useSession } from '../../Session';
 import { login } from '../../services';
+import { TextLink } from '../../public/components/TextLink';
 
 const useStyles = makeStyles({
   container: {
@@ -69,6 +70,7 @@ export function LoginPage() {
         <Button type={'submit'} variant={'contained'} color={'primary'} disabled={isLoginLoading}>
           Prihlás sa
         </Button>
+        <TextLink center to={'/'} text={'Prejsť na somvrade.sk'} />
         {isLoginLoading && <LinearProgress />}
       </form>
       <Snackbar

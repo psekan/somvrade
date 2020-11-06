@@ -9,6 +9,7 @@ import {
   TableHead,
   IconButton,
   TablePagination,
+  Snackbar,
 } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import LinearProgress from '@material-ui/core/LinearProgress';
@@ -16,12 +17,14 @@ import AddNewEntryIcon from '@material-ui/icons/AddToPhotos';
 import ClockIcon from '@material-ui/icons/QueryBuilder';
 import TextField from '@material-ui/core/TextField';
 import SearchIcon from '@material-ui/icons/SearchOutlined';
+import InfoIcon from '@material-ui/icons/ListAlt';
 import { matchSorter } from 'match-sorter';
 import { WaitingEntryDialog } from './WaitingEntryDialog';
 import { SetBreakDialog } from './SetBreakDialog';
+import { EntryDetailDialog } from './EntryDetailDialog';
 import { useCollectionPointsAdmin, CollectionPointEntity } from '../../services';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
   container: {
     padding: 0,
   },
@@ -31,12 +34,19 @@ const useStyles = makeStyles({
   rowActions: {
     display: 'flex',
     justifyContent: 'flex-end',
+    flexWrap: 'wrap',
   },
   searchInput: {
     margin: '10px 0',
     padding: '10px',
   },
-});
+  breakInfo: {
+    color: theme.palette.primary.main,
+  },
+  breakInfoIcon: {
+    verticalAlign: 'bottom',
+  },
+}));
 
 type CollectionPointsProps = {
   onlyWaiting: boolean;
@@ -48,12 +58,13 @@ export function CollectionPoints(props: CollectionPointsProps) {
   const classes = useStyles();
   const [dialogEntity, setDialogEditingEntity] = useState<{
     entity: CollectionPointEntity;
-    dialog: 'break' | 'addentry';
+    dialog: 'break' | 'addentry' | 'detail';
   }>();
   const { isLoading, response, error, refresh } = useCollectionPointsAdmin();
   const [filter, setFilter] = useState('');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(DEFAULT_PAGE_SIZE);
+  const [successMessage, setSuccessMessage] = useState('');
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
@@ -128,6 +139,12 @@ export function CollectionPoints(props: CollectionPointsProps) {
                     dialog: 'break',
                   })
                 }
+                handleDetail={entity =>
+                  setDialogEditingEntity({
+                    entity,
+                    dialog: 'detail',
+                  })
+                }
               />
             ))}
           </TableBody>
@@ -139,6 +156,7 @@ export function CollectionPoints(props: CollectionPointsProps) {
         onCancel={() => setDialogEditingEntity(undefined)}
         onConfirm={() => {
           setDialogEditingEntity(undefined);
+          setSuccessMessage('Vaše údaje boli úspešne uložené.');
           refresh();
         }}
       />
@@ -147,9 +165,23 @@ export function CollectionPoints(props: CollectionPointsProps) {
         onCancel={() => setDialogEditingEntity(undefined)}
         onConfirm={() => {
           setDialogEditingEntity(undefined);
+          setSuccessMessage('Vaše údaje boli úspešne uložené.');
           refresh();
         }}
       />
+      <EntryDetailDialog
+        entity={dialogEntity?.dialog === 'detail' ? dialogEntity.entity : undefined}
+        onCancel={() => setDialogEditingEntity(undefined)}
+      />
+      <Snackbar
+        open={!!successMessage}
+        autoHideDuration={6000}
+        onClose={() => setSuccessMessage('')}
+      >
+        <Alert severity="success" onClose={() => setSuccessMessage('')}>
+          {successMessage}
+        </Alert>
+      </Snackbar>
     </>
   );
 }
@@ -158,10 +190,12 @@ function Row({
   entity,
   handleBreak,
   handleAddEntry,
+  handleDetail,
 }: {
   entity: CollectionPointEntity;
   handleBreak: (entity: CollectionPointEntity) => void;
   handleAddEntry: (entity: CollectionPointEntity) => void;
+  handleDetail: (entity: CollectionPointEntity) => void;
 }) {
   const classes = useStyles();
 
@@ -176,11 +210,11 @@ function Row({
         <br />
         <strong>{entity.address}</strong>
         {entity.break_start ? (
-          <>
+          <span className={classes.breakInfo}>
             <br />
-            <ClockIcon fontSize={'small'} />
+            <ClockIcon fontSize={'small'} className={classes.breakInfoIcon} />
             Prestávka do {entity.break_stop}
-          </>
+          </span>
         ) : (
           ''
         )}
@@ -201,6 +235,13 @@ function Row({
             onClick={() => handleBreak(entity)}
           >
             <ClockIcon />
+          </IconButton>
+          <IconButton
+            color={'primary'}
+            title={'Spravovať prestávky'}
+            onClick={() => handleDetail(entity)}
+          >
+            <InfoIcon />
           </IconButton>
         </div>
       </TableCell>
