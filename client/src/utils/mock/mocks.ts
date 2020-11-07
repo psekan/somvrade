@@ -123,14 +123,14 @@ function generateEntries(count = Math.ceil(Math.random() * 40)) {
     departure: '07:10',
     token: '123',
     length: 10,
-    verified: false,
+    verified: 0,
     collection_point_id: '0',
     admin_note: null,
   };
   const entries = [];
   for (let i = 0; i < count; i++) {
     const arrivedSub = Math.ceil(Math.random() * 400000 * (count - i));
-    const isVerified = i % 6 === 0;
+    const isVerified = i % 6 === 0 ? 1 : 0;
     entries.push({
       ...template,
       id: i,

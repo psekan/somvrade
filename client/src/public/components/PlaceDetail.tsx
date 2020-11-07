@@ -80,6 +80,7 @@ export function PlaceDetail({
   const history = useHistory();
   const { isLoading, response, error, refresh } = useCollectionPointsPublic(county);
   const detail = response?.find(it => String(it.id) === String(id));
+  const [session, sessionActions] = useSession();
   return (
     <div className={className}>
       {showSearch && (
@@ -95,7 +96,22 @@ export function PlaceDetail({
       {isLoading && <LinearProgress />}
       {!isLoading && error && <ErrorHandler refresh={refresh} />}
       {!detail && !error && !isLoading && (
-        <Alert severity={'warning'}>Odberné miesto nenájdene</Alert>
+        <Alert
+          severity={'warning'}
+          action={
+            session.favorites?.some(it => it.county === county && it.entryId === id) && (
+              <Button
+                color="inherit"
+                size="small"
+                onClick={() => sessionActions.setFavorite(county, id)}
+              >
+                Vymaž zo sledovaných
+              </Button>
+            )
+          }
+        >
+          Odberné miesto nenájdene
+        </Alert>
       )}
       {!isLoading && detail && (
         <ConditionalRender

@@ -140,9 +140,9 @@ export function CollectionEntries({
             {dataToDisplay.slice(0, tableCollabsed ? maxItemsCollapsed : dataSize).map(row => (
               <TableRow
                 key={row.id}
-                className={classNames(row.verified ? classes.verified : undefined)}
+                className={classNames(row.verified !== 0 ? classes.verified : undefined)}
                 onClick={() => {
-                  if (row.verified) {
+                  if (row.verified !== 0) {
                     setInfoMessage({
                       message: `Záznam uložený administratívnym pracovníkom priamo z daného odberného miesta.`,
                       additionalInfo: row.admin_note,
@@ -152,7 +152,9 @@ export function CollectionEntries({
               >
                 <TableCell component="th" scope="row">
                   {formatTime(row.arrive)}{' '}
-                  {row.verified && <CheckCircleIcon className={classes.infoIconSmall} />}
+                  {row.verified !== 0 ? (
+                    <CheckCircleIcon className={classes.infoIconSmall} />
+                  ) : null}
                   {row.admin_note && <MessageIcon className={classes.infoIconSmall} />}
                 </TableCell>
                 <TableCell component="th" scope="row" align={'center'}>
@@ -162,9 +164,11 @@ export function CollectionEntries({
                   component="th"
                   scope="row"
                   align={'right'}
-                  className={classNames(row.verified && classes.adminVerifiedColInfo)}
+                  className={classNames(row.verified !== 0 && classes.adminVerifiedColInfo)}
                 >
-                  {row.verified ? 'Zadané administrátorom' : formatTime(row.departure) || 'Čaká sa'}
+                  {row.verified !== 0
+                    ? 'Zadané administrátorom'
+                    : formatTime(row.departure) || 'Čaká sa'}
                 </TableCell>
               </TableRow>
             ))}
@@ -265,7 +269,7 @@ function getWithinHour(data: CollectionPointEntry[], onlyVerified?: boolean) {
   const hourBefore = new Date(Date.now() - 3600000);
   const now = new Date();
   return data
-    .filter(it => !onlyVerified || it.verified)
+    .filter(it => !onlyVerified || it.verified !== 0)
     .filter(it => {
       const hourMinutesPair = it.arrive.split(':');
       const timeAdded = setHours(

@@ -30,7 +30,7 @@ export interface CollectionPointEntry {
   departure: string;
   token: string;
   length: number;
-  verified?: boolean;
+  verified?: number;
   admin_note?: string | null;
 }
 
