@@ -10,6 +10,7 @@ import FaceOutlinedIcon from '@material-ui/icons/BookmarkBorder';
 import FavoriteIcon from '@material-ui/icons/Bookmark';
 import ClockIcon from '@material-ui/icons/QueryBuilder';
 import Avatar from '@material-ui/core/Avatar';
+import { AlertTitle } from '@material-ui/lab';
 
 import {
   useCollectionPointsPublic,
@@ -21,7 +22,7 @@ import { CollectionEntries } from '../components/CollectionEntries';
 import { useSession } from '../../Session';
 import { MAX_FAVORITES } from '../../constants';
 import { SocialButtons } from '../components/SocialButtons';
-import { AlertTitle } from '@material-ui/lab';
+import { OdberneMiesta, DefaultExternal } from './ExternalPartners';
 
 const useStyles = makeStyles({
   placeTitle: {
@@ -97,15 +98,33 @@ export function PlaceDetail({
         <Alert severity={'warning'}>Odberné miesto nenájdene</Alert>
       )}
       {!isLoading && detail && (
-        <PlaceDetailTable
-          county={county}
-          id={id}
-          showSearch={showSearch}
-          limitTable={limitTable}
-          className={className}
-          detail={detail}
-          showSocialButtons={showSocialButtons}
-          adminView={adminView}
+        <ConditionalRender
+          value={detail.external_system_id}
+          items={[
+            {
+              default: true,
+              component: (
+                <PlaceDetailTable
+                  county={county}
+                  id={id}
+                  showSearch={showSearch}
+                  limitTable={limitTable}
+                  className={className}
+                  detail={detail}
+                  showSocialButtons={showSocialButtons}
+                  adminView={adminView}
+                />
+              ),
+            },
+            {
+              case: 1,
+              component: <OdberneMiesta />,
+            },
+            {
+              case: 2,
+              component: <DefaultExternal />,
+            },
+          ]}
         />
       )}
     </div>
@@ -137,6 +156,10 @@ function PlaceDetailTable({
         <div>
           <div className={classes.locationContainer}>
             <PlaceName county={county} id={id} detail={detail} adminView={adminView} />
+            <ConditionalRender
+              value={detail.external_system_id}
+              items={[{ default: true, component: <></> }]}
+            />
             {!adminView && (
               <div style={{ textAlign: 'right' }}>
                 {session.favorites?.some(it => it.county === county && it.entryId === id) ? (
@@ -202,9 +225,24 @@ function PlaceDetailTable({
           )}
         </div>
       )}
-      {showSocialButtons && <SocialButtons />}
+      {showSocialButtons && !adminView && <SocialButtons />}
     </>
   );
+}
+
+interface ConditionalRenderProps<T> {
+  value: T;
+  items: Array<{
+    case?: T;
+    default?: boolean;
+    component: React.ReactNode;
+  }>;
+}
+
+function ConditionalRender<T>({ items, value }: ConditionalRenderProps<T>) {
+  let component = items.find(it => it.case === value);
+  component = component || items.find(it => it.default);
+  return <>{component ? component.component || null : null}</>;
 }
 
 function PlaceName({
@@ -245,3 +283,9 @@ function ErrorHandler({ refresh }: { refresh: () => void }) {
     </Alert>
   );
 }
+
+/**
+ * takze ak external_system_id == 0, chovanie je aktualne, bez zmien
+ak external_system_id == 1, tak namiesto tabulky hlaseni a moznosti pridat hlasenie treba zobrazi hlasku s odkazom na odbernemiesta.sk
+ak external_system_id == 2, tak zobrazit namiesto tabulky hlaseni text, ze odberne miesto vyuziva inu sluzbu
+ */

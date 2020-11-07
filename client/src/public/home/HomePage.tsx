@@ -3,6 +3,7 @@ import { Link, Typography, makeStyles, Theme, createStyles, Grid } from '@materi
 import CalendarIcon from '@material-ui/icons/Today';
 import ClockIcon from '@material-ui/icons/QueryBuilder';
 import { NavLink } from '../components/NavLink';
+import odberneMiestaLogo from './components/odbernemiesta.sk_logo.png';
 import { useSession } from '../../Session';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -31,6 +32,7 @@ const useStyles = makeStyles((theme: Theme) =>
       textAlign: 'center',
       display: 'block',
       fontSize: '1.2rem',
+      marginBottom: 20,
     },
     contact: {
       textAlign: 'center',
@@ -48,6 +50,14 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     bold: {
       fontWeight: 800,
+    },
+    odbernieMiestaLogo: {
+      display: 'block',
+      textAlign: 'center',
+      padding: 10,
+      '& img': {
+        maxWidth: 300,
+      },
     },
   }),
 );
@@ -141,6 +151,16 @@ export function HomePage() {
           somzodpovedny.sk
         </Link>
       </Typography>
+      <Typography variant={'subtitle2'} align={'center'}>
+        Ak ste nenašli vaše odberné miesto, využite partnerskú službu na:
+      </Typography>
+      <Link
+        href={'https://odbernemiesta.sk/'}
+        target={'_blank'}
+        className={classes.odbernieMiestaLogo}
+      >
+        <img src={odberneMiestaLogo} alt={'odbernemiesta.sk'} />
+      </Link>
     </div>
   );
 }

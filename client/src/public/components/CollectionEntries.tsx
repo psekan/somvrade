@@ -197,10 +197,12 @@ export function CollectionEntries({
         <div className={classes.messageContent}>
           <InfoIcon className={classes.infoIconLarge} />
           <div>{infoMessage?.message}</div>
-          <div className={classes.messageContentAdditional}>
-            Dotatočná informácia: <br />
-            {infoMessage?.additionalInfo}
-          </div>
+          {infoMessage?.additionalInfo && (
+            <div className={classes.messageContentAdditional}>
+              Dotatočná informácia: <br />
+              {infoMessage?.additionalInfo}
+            </div>
+          )}
         </div>
       </Backdrop>
     </div>
