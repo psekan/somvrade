@@ -32,7 +32,7 @@ export function EntryDetailDialog({
       fullScreen={isMobile}
     >
       <DialogContent>
-        {entity && <PlaceDetail county={entity.county} id={entity.id} adminView />}
+        {entity && <PlaceDetail county={entity.region} id={entity.id} adminView />}
       </DialogContent>
       <DialogActions className={classes.dialogFooter}>
         <Button onClick={onCancel} color="primary">

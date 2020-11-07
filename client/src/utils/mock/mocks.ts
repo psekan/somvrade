@@ -79,6 +79,7 @@ function getCollectionPoints(): CollectionPointEntity[] {
       region: 'region',
       address: 'Šport. areál P. Horova 16 ',
       teams: 2,
+      external_system_id: 1,
     },
     {
       id: '4',
@@ -86,6 +87,7 @@ function getCollectionPoints(): CollectionPointEntity[] {
       city: 'Bratislava',
       region: 'region',
       address: 'Vila Košťálová, Novoveská 17 ',
+      external_system_id: 2,
     },
     {
       id: '5',
