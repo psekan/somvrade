@@ -156,10 +156,6 @@ function PlaceDetailTable({
         <div>
           <div className={classes.locationContainer}>
             <PlaceName county={county} id={id} detail={detail} adminView={adminView} />
-            <ConditionalRender
-              value={detail.external_system_id}
-              items={[{ default: true, component: <></> }]}
-            />
             {!adminView && (
               <div style={{ textAlign: 'right' }}>
                 {session.favorites?.some(it => it.county === county && it.entryId === id) ? (
