@@ -34,14 +34,22 @@ const mocks = [
     method: 'PUT',
     response: () => ({}),
   },
-
   {
     urlMath: '/api/login',
     method: 'POST',
     response: () => ({
       token: '123',
       token_type: 'Bearer',
-      expires_in: 33,
+      expires_in: 3600,
+    }),
+  },
+  {
+    urlMath: '/api/auth/refresh',
+    method: 'POST',
+    response: () => ({
+      token: '123',
+      token_type: 'Bearer',
+      expires_in: 3600,
     }),
   },
   {
