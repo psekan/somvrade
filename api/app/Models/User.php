@@ -71,7 +71,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
      * @param $id
      * @return CollectionPoints|null
      */
-    public function allowedCollectionPoints($id) {
+    public function allowedCollectionPoint($id) {
         $collectionPoint = $this->collectionPoints()->whereKey($id)->first();
         if ($collectionPoint instanceof CollectionPoints) {
             return $collectionPoint;
