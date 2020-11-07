@@ -1,4 +1,5 @@
-import React, { useContext, useState, useMemo } from 'react';
+import React, { useContext, useState, useMemo, useEffect } from 'react';
+import { refreshToken } from './services';
 
 const defaultSession: Session = {
   isLoggedIn: false,
@@ -56,11 +57,48 @@ const SessionContext = React.createContext<SessionContextType>([defaultSession, 
 export function SessionContextProvider({ children }: React.PropsWithChildren<{}>) {
   const [state, setState] = useState({ ...defaultSession, ...restoreSession() });
 
+  useEffect(() => {
+    let timeout: any;
+
+    if (state.token) {
+      const runRefreshIn = state.token.expiresIn - Date.now();
+      //eslint-disable-next-line
+      console.log('token valid', runRefreshIn / 1000, 'seconds');
+      timeout = setTimeout(() => {
+        //eslint-disable-next-line
+        console.log('refreshing token');
+        refreshToken(state.token)
+          .then(resp =>
+            setState(prev => ({
+              ...prev,
+              token: {
+                accessToken: resp.token,
+                tokenType: resp.token_type,
+                expiresIn: new Date(Date.now() + (resp.expires_in - 60) * 1000).getTime(),
+              },
+            })),
+          )
+          .catch(() =>
+            setState(prev => {
+              sessionStorage.removeItem(STORAGE_KEY);
+              return { ...prev, token: undefined, isLoggedIn: false };
+            }),
+          );
+      }, runRefreshIn);
+    }
+    return () => {
+      if (timeout) {
+        clearTimeout(timeout);
+      }
+    };
+  }, [state.token]);
+
   const sessionContext = useMemo<SessionContextType>(() => {
     return [
       state,
       {
         initSecureSession: token => {
+          token.expiresIn = new Date(Date.now() + (token.expiresIn - 60) * 1000).getTime();
           sessionStorage.setItem(STORAGE_KEY, JSON.stringify(token));
           setState({ ...state, isLoggedIn: true, token });
         },

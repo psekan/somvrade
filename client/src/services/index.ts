@@ -106,6 +106,13 @@ export function login(username: string, password: string): Promise<LoginResponse
   });
 }
 
+export function refreshToken(token: Session['token']): Promise<LoginResponse> {
+  return fetchJson('/api/auth/refresh', {
+    method: 'POST',
+    ...withSessionHeaders({ token }),
+  });
+}
+
 export function useCollectionPointsAdmin() {
   const [session] = useSession();
   return useFetch<CollectionPointEntity[]>(`/api/auth/collectionpoints`, {
@@ -144,13 +151,13 @@ export async function updateCollectionPoint(
   });
 }
 
-function withSessionHeaders(session: Session) {
+function withSessionHeaders(session: { token?: Session['token'] }) {
   return {
     headers: sessionHeaders(session),
   };
 }
 
-function sessionHeaders(session?: Session) {
+function sessionHeaders(session?: { token?: Session['token'] }) {
   return (
     session && {
       Authorization: `${session.token?.tokenType} ${session.token?.accessToken}`,

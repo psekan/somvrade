@@ -156,10 +156,6 @@ function PlaceDetailTable({
         <div>
           <div className={classes.locationContainer}>
             <PlaceName county={county} id={id} detail={detail} adminView={adminView} />
-            <ConditionalRender
-              value={detail.external_system_id}
-              items={[{ default: true, component: <></> }]}
-            />
             {!adminView && (
               <div style={{ textAlign: 'right' }}>
                 {session.favorites?.some(it => it.county === county && it.entryId === id) ? (
@@ -240,6 +236,7 @@ interface ConditionalRenderProps<T> {
 }
 
 function ConditionalRender<T>({ items, value }: ConditionalRenderProps<T>) {
+  console.log(value);
   let component = items.find(it => it.case === value);
   component = component || items.find(it => it.default);
   return <>{component ? component.component || null : null}</>;
