@@ -283,9 +283,3 @@ function ErrorHandler({ refresh }: { refresh: () => void }) {
     </Alert>
   );
 }
-
-/**
- * takze ak external_system_id == 0, chovanie je aktualne, bez zmien
-ak external_system_id == 1, tak namiesto tabulky hlaseni a moznosti pridat hlasenie treba zobrazi hlasku s odkazom na odbernemiesta.sk
-ak external_system_id == 2, tak zobrazit namiesto tabulky hlaseni text, ze odberne miesto vyuziva inu sluzbu
- */
