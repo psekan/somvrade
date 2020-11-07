@@ -92,7 +92,7 @@ export function RegisterPlace({ id, county }: RegisterPlaceProps) {
                 value={selectedDate}
                 onChange={handleDateChange}
                 className={classes.fullWidth}
-                minutesStep={5}
+                minutesStep={1}
               />
             </Grid>
             <Grid item md={4} xs={6}>

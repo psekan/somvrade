@@ -78,7 +78,7 @@ export function UpdateDeparture() {
                 value={selectedDate}
                 onChange={handleDateChange}
                 className={classes.fullWidth}
-                minutesStep={5}
+                minutesStep={1}
               />
             </Grid>
           </Grid>
