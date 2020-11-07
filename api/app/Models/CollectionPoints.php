@@ -27,7 +27,6 @@ class CollectionPoints extends Model
      */
     protected $hidden = [
         'created_at',
-        'updated_at',
-        'region'
+        'updated_at'
     ];
 }

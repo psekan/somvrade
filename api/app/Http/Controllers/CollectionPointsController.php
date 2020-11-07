@@ -49,7 +49,7 @@ class CollectionPointsController extends Controller
             ->orderBy('county')
             ->orderBy('city')
             ->orderBy('address')
-            ->get();
+            ->get()->makeHidden('region');
         $this->cache->set(self::CACHE_KEY.$region, $collectionPoint);
         return $collectionPoint;
     }
