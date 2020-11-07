@@ -64,6 +64,18 @@ export function SessionContextProvider({ children }: React.PropsWithChildren<{}>
       const runRefreshIn = state.token.expiresIn - Date.now();
       //eslint-disable-next-line
       console.log('token valid', runRefreshIn / 1000, 'seconds');
+
+      const destroSession = () =>
+        setState(prev => {
+          sessionStorage.removeItem(STORAGE_KEY);
+          return { ...prev, token: undefined, isLoggedIn: false };
+        });
+
+      if (runRefreshIn < 0) {
+        destroSession();
+        return;
+      }
+
       timeout = setTimeout(() => {
         //eslint-disable-next-line
         console.log('refreshing token');
@@ -78,12 +90,7 @@ export function SessionContextProvider({ children }: React.PropsWithChildren<{}>
               },
             })),
           )
-          .catch(() =>
-            setState(prev => {
-              sessionStorage.removeItem(STORAGE_KEY);
-              return { ...prev, token: undefined, isLoggedIn: false };
-            }),
-          );
+          .catch(destroSession);
       }, runRefreshIn);
     }
     return () => {

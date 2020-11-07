@@ -79,7 +79,7 @@ export function PlaceDetail({
   const classes = useStyles();
   const history = useHistory();
   const { isLoading, response, error, refresh } = useCollectionPointsPublic(county);
-  const detail = response?.find(it => String(it.id) === id);
+  const detail = response?.find(it => String(it.id) === String(id));
   return (
     <div className={className}>
       {showSearch && (
