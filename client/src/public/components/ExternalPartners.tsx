@@ -12,18 +12,41 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
+interface OnlineBookingProps {
+    link?: string|null;
+}
+
 export function OdberneMiesta() {
-  return (
-    <div>
-      <ExternalIndicator />
-      <Typography variant={'h6'} align={'center'} gutterBottom>
-        Toto odberné miesto využíva na informovanie o čakacích dobách webovú stránku{' '}
-        <Link href={'https://odbernemiesta.sk/'} target={'_blank'}>
-          odbernemiesta.sk
-        </Link>
-      </Typography>
-    </div>
-  );
+    return (
+        <div>
+            <ExternalIndicator />
+            <Typography variant={'h6'} align={'center'} gutterBottom>
+                Toto odberné miesto využíva na informovanie o čakacích dobách webovú stránku{' '}
+                <Link href={'https://odbernemiesta.sk/'} target={'_blank'}>
+                    odbernemiesta.sk
+                </Link>
+            </Typography>
+        </div>
+    );
+}
+
+export function OnlineBooking(props: OnlineBookingProps) {
+    return (
+        <div>
+            <ExternalIndicator />
+            <Typography variant={'h6'} align={'center'} gutterBottom>
+                Toto odberné miesto využíva externý objednávkový systém {' '}
+                {props.link && (
+                    <>
+                        na adrese {' '}
+                        <Link href={props.link} target={'_blank'}>
+                            {props.link}
+                        </Link>
+                    </>
+                )}.
+            </Typography>
+        </div>
+    );
 }
 
 export function DefaultExternal() {

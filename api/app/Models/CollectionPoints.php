@@ -17,7 +17,8 @@ class CollectionPoints extends Model
      * @var array
      */
     protected $fillable = [
-        'break_start', 'break_stop', 'break_note'
+        'id', 'region', 'county', 'city', 'address', 'external_system_id', 'external_system_link', 'note',
+        'break_start', 'break_stop', 'break_note', 'teams'
     ];
 
     /**

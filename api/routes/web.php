@@ -15,7 +15,7 @@
 
 $router->group(['prefix' => 'api'], function () use ($router) {
     $router->get('/version', function () use ($router) {
-        return response()->json(['name' => 'Som v rade.sk API', 'version' => '1.1.1']);
+        return response()->json(['name' => 'Som v rade.sk API', 'version' => '1.2.0']);
     });
     $router->get('collectionpoints',  'CollectionPointsController@showAll');
     $router->get('collectionpoints/{id}', 'CollectionPointsController@showOne');

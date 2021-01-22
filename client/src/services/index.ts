@@ -9,10 +9,12 @@ export interface CollectionPointEntity {
   region: string;
   address: string;
   teams?: number;
-  external_system_id?: 0 | 1 | 2;
+  external_system_id?: 0 | 1 | 2 | 3;
+  external_system_link?: string | null;
   break_start?: string | null;
   break_stop?: string | null;
   break_note?: string | null;
+  note?: string | null;
 }
 
 export function useCollectionPointsPublic(county: string) {

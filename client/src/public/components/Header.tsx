@@ -40,7 +40,7 @@ export function Header({ compact }: { compact: boolean }) {
       <Typography variant="subtitle1" gutterBottom={!compact}>
         {compact
           ? 'a chcem pomôcť'
-          : 'Aktuálne informácie o dĺžke čakania na celoplošné testovanie COVID-19.'}
+          : 'Aktuálne informácie o dĺžke čakania na antigénové testovanie COVID-19.'}
       </Typography>
       {session.isRegistered && (
         <Link

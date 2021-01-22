@@ -68,13 +68,16 @@ export function HomePage() {
 
   return (
     <div>
-      <Typography variant={'h6'} className={classes.optionsTitle}>
-        2. kolo celoplošného testovania
-      </Typography>
-      <Typography variant="subtitle2" style={{ marginBottom: '1rem' }}>
-        Zoznam odberných miest je aktualizovaný podľa okresov, v ktorých sa uskutočňuje 2. kolo
-        celoplošného testovania.
-      </Typography>
+      {/*<Typography variant={'h6'} className={classes.optionsTitle}>*/}
+      {/*  Antigénové testovania*/}
+      {/*</Typography>*/}
+    <Typography variant="subtitle2" style={{ marginBottom: '1rem' }}>
+        V prípade, že sa Vaša obec alebo odberné miesto nenachádza v zozname, napíšte nám na emailovú adresu{' '}
+        <Link href="mailto:somvrade@gmail.com">somvrade@gmail.com</Link>.
+    </Typography>
+    <Typography variant="subtitle2" style={{ marginBottom: '1rem' }}>
+        Zoznam odberných miest je aktualizovaný podľa údajov zverejnených Ministerstvom zdravotníctva.
+    </Typography>
       <div className={classes.options}>
         <Typography variant={'h6'} className={classes.optionsTitle}>
           Vyberte jednu z možností:
@@ -109,30 +112,19 @@ export function HomePage() {
       <div className={classes.infoMessage}>
         <CalendarIcon fontSize={'small'} className={classes.infoMessageIcon} />
         <span>
-          Druhé kolo celoplošného testovania prebieha{' '}
-          <span className={classes.bold}>
-            v 45. okresoch v sobotu 7. novembra a v nedeľu 8. novembra, od 8:00 do 20:00.
-          </span>{' '}
-          Zoznam okresov, v ktorých sa koná druhé kolo celoplošného testovania nájdete na stránke{' '}
-          <Link
-            href={
-              'https://www.somzodpovedny.sk/v-druhom-kole-sa-bude-plosne-testovat-45-okresov%e2%80%8b/'
-            }
-            target={'_blank'}
-          >
-            somzodpovedny.sk
-          </Link>
+          <span className={classes.bold}>Posledné odbery</span> sú vykonávané <span className={classes.bold}>cca 30 min. pre koncom</span> otváracej doby, z dôvodu vyhodnocovania testov.
+Počas sviatkov <span className={classes.bold}>24.12. - 26.12.2020, 1.1.2021 a 6.1.2021</span> budú bezplatné antigénové <span className={classes.bold}>odberné miesta zatvorené</span>.
         </span>
       </div>
       <div className={classes.infoMessage}>
         <ClockIcon fontSize={'small'} className={classes.infoMessageIcon} />
         <span>
-          <span className={classes.bold}>Prestávka v testovaní</span> - odberné miesta budú mať{' '}
-          <span className={classes.bold}>dve prestávky</span> počas testovacích dní a to spravidla{' '}
+          <span className={classes.bold}>Prestávka v testovaní</span> - odberné miesta majú obvikle{' '}
+          <span className={classes.bold}>obedné prestávky</span>. Ich čas su môžete skontrolovať na stránke {' '}
           <span className={classes.bold}>
-            od 12:00 do 12:45 a od 17:00 do 17:30. Časy prestávok sa môžu líšiť
+            Ministerstva zdravotníctva
           </span>{' '}
-          a preto odporúčame sledovať aktuálne informácie pre vami preferované odberné miesto.
+          prípadne na našich stránach, po vyhľadaní odberného miesta.
         </span>
       </div>
 
@@ -146,21 +138,21 @@ export function HomePage() {
         allowFullScreen
       ></iframe>
       <Typography variant={'body1'} className={classes.bottomInfo}>
-        Aktuálne informácie o celoplošnom testovaní nájdete na{' '}
-        <Link href={'https://www.somzodpovedny.sk/'} target={'_blank'}>
-          somzodpovedny.sk
+        Aktuálne informácie o antigénovom testovaní nájdete na{' '}
+        <Link href={'https://www.health.gov.sk/?ag-mom'} target={'_blank'}>
+            https://www.health.gov.sk/?ag-mom
         </Link>
       </Typography>
-      <Typography variant={'subtitle2'} align={'center'}>
-        Ak ste nenašli vaše odberné miesto, využite partnerskú službu na:
-      </Typography>
-      <Link
-        href={'https://odbernemiesta.sk/'}
-        target={'_blank'}
-        className={classes.odbernieMiestaLogo}
-      >
-        <img src={odberneMiestaLogo} alt={'odbernemiesta.sk'} />
-      </Link>
+      {/*<Typography variant={'subtitle2'} align={'center'}>*/}
+      {/*  Ak ste nenašli vaše odberné miesto, využite partnerskú službu na:*/}
+      {/*</Typography>*/}
+      {/*<Link*/}
+      {/*  href={'https://odbernemiesta.sk/'}*/}
+      {/*  target={'_blank'}*/}
+      {/*  className={classes.odbernieMiestaLogo}*/}
+      {/*>*/}
+      {/*  <img src={odberneMiestaLogo} alt={'odbernemiesta.sk'} />*/}
+      {/*</Link>*/}
     </div>
   );
 }

@@ -29,8 +29,7 @@ export default function App() {
       </Router>
       <Typography variant={'body1'} className={classes.contact}>
         Zaznamenali ste chybu, nenašli ste odberné miesto, alebo máte iný dotaz? Prosím, napíšte nám
-        na <Link href="mailto:info@somvrade.sk">info@somvrade.sk</Link>, alebo nám zavolajte na{' '}
-        <Link href="tel:0233070498">02/33070498</Link>, kde zistíte viac informácií.
+        na <Link href="mailto:somvrade@gmail.com">somvrade@gmail.com</Link>.
       </Typography>
     </>
   );

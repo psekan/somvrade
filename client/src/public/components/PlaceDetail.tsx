@@ -22,7 +22,7 @@ import { CollectionEntries } from '../components/CollectionEntries';
 import { useSession } from '../../Session';
 import { MAX_FAVORITES } from '../../constants';
 import { SocialButtons } from '../components/SocialButtons';
-import { OdberneMiesta, DefaultExternal } from './ExternalPartners';
+import { OdberneMiesta, DefaultExternal, OnlineBooking } from './ExternalPartners';
 
 const useStyles = makeStyles({
   placeTitle: {
@@ -114,34 +114,40 @@ export function PlaceDetail({
         </Alert>
       )}
       {!isLoading && detail && (
-        <ConditionalRender
-          value={detail.external_system_id}
-          items={[
-            {
-              default: true,
-              component: (
-                <PlaceDetailTable
-                  county={county}
-                  id={id}
-                  showSearch={showSearch}
-                  limitTable={limitTable}
-                  className={className}
-                  detail={detail}
-                  showSocialButtons={showSocialButtons}
-                  adminView={adminView}
-                />
-              ),
-            },
-            {
-              case: 1,
-              component: <OdberneMiesta />,
-            },
-            {
-              case: 2,
-              component: <DefaultExternal />,
-            },
-          ]}
-        />
+        <>
+          <ConditionalRender
+            value={detail.external_system_id}
+            items={[
+              {
+                default: true,
+                component: (
+                  <PlaceDetailTable
+                    county={county}
+                    id={id}
+                    showSearch={showSearch}
+                    limitTable={limitTable}
+                    className={className}
+                    detail={detail}
+                    showSocialButtons={showSocialButtons}
+                    adminView={adminView}
+                  />
+                ),
+              },
+              {
+                case: 1,
+                component: <OdberneMiesta />,
+              },
+              {
+                case: 2,
+                component: <DefaultExternal />,
+              },
+              {
+                case: 3,
+                component: <OnlineBooking link={detail.external_system_link}/>,
+              },
+            ]}
+          />
+        </>
       )}
     </div>
   );
@@ -206,15 +212,15 @@ function PlaceDetailTable({
               </div>
             )}
           </div>
-          <div className={classes.teamWrapper}>
-            <Chip
-              variant={'outlined'}
-              size={'small'}
-              avatar={<Avatar>{detail.teams || '?'}</Avatar>}
-              label={'Počet odberných tímov'}
-              color={'primary'}
-            />
-          </div>
+          {/*<div className={classes.teamWrapper}>*/}
+          {/*  <Chip*/}
+          {/*    variant={'outlined'}*/}
+          {/*    size={'small'}*/}
+          {/*    avatar={<Avatar>{detail.teams || '?'}</Avatar>}*/}
+          {/*    label={'Počet odberných tímov'}*/}
+          {/*    color={'primary'}*/}
+          {/*  />*/}
+          {/*</div>*/}
           {detail.break_start && (
             <Alert severity={'warning'} icon={<ClockIcon />}>
               <AlertTitle className={classes.alertBreakTitle}>
@@ -222,6 +228,14 @@ function PlaceDetailTable({
               </AlertTitle>
               {detail.break_note || ''}
             </Alert>
+          )}
+          {detail.note && (
+              <Alert severity={'info'} icon={<ClockIcon />}>
+                <AlertTitle className={classes.alertBreakTitle}>
+                  Prevádzkové hodiny
+                </AlertTitle>
+                {detail.note}
+              </Alert>
           )}
           <CollectionEntries className={classes.table} limitTable={limitTable} data={response} />
           {!session.isRegistered && !adminView && (

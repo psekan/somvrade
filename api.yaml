@@ -1,0 +1,150 @@
+swagger: "2.0"
+info:
+  description: ""
+  version: "1.2.0"
+  title: "Som v rade.sk"
+  contact:
+    email: "somvrade@gmail.com"
+  license:
+    name: "GPL-3.0"
+    url: "https://github.com/psekan/somvrade/blob/main/LICENSE"
+host: "www.somvrade.sk"
+basePath: "/api"
+tags:
+  - name: "collection points"
+    description: "Odberné miesta"
+  - name: "entry"
+    description: "Hlásenia"
+schemes:
+  - "https"
+paths:
+  /collectionpoints:
+    get:
+      tags:
+        - "collection points"
+      summary: "Vyhľadanie odberných miest v kraji"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "region"
+          in: "query"
+          description: "Kraj, pre ktorý majú byť vrátené odberné miesta"
+          required: true
+          type: "string"
+          enum:
+            - "BA"
+            - "TT"
+            - "TN"
+            - "NR"
+            - "ZA"
+            - "BB"
+            - "KE"
+            - "PO"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Collectionpoint"
+  /collectionpoints/{id}/entries:
+    get:
+      tags:
+        - "entry"
+      summary: "Vyhľadanie hlásení aktuálneho dňa odberného miesta"
+      operationId: "findPetsByStatus"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID oberného miesta"
+          required: true
+          type: "integer"
+          format: "int64"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Entry"
+definitions:
+  Collectionpoint:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      region:
+        type: "string"
+        description: "Kraj"
+        enum:
+          - "BA"
+          - "TT"
+          - "TN"
+          - "NR"
+          - "ZA"
+          - "BB"
+          - "KE"
+          - "PO"
+      county:
+        type: "string"
+        description: "Okres"
+      city:
+        type: "string"
+        description: "Mesto/obec"
+      address:
+        type: "string"
+        description: "Adresa odberného miesta"
+      teams:
+        type: "integer"
+        description: "Počet odberných tímov na odbernom mieste"
+      external_system_id:
+        type: "integer"
+        description: "0 - žiadny, údaje zadávane v našom systéme, 1 - odkaz na odbernemiesta.sk, 2 - vlastný neznámy systém, 3 - vlastný systém na adrese uvedenej v property external_system_link"
+        enum:
+          - 0
+          - 1
+          - 2
+          - 3
+      external_system_link:
+        type: "string"
+        description: "Url externého systému odberného miesta"
+      break_start:
+        type: "string"
+        description: "Nullable, čas začiatku prestávky zadanej administrátorom v systéme"
+        pattern: '^\d{2}:\d{2}:\d{2}$'
+      break_stop:
+        type: "string"
+        description: "Nullable, čas konca prestávky zadanej administrátorom v systéme"
+        pattern: '^\d{2}:\d{2}:\d{2}$'
+      break_note:
+        type: "string"
+        description: "Poznámka prestávky zadanej administrátorom v systéme"
+      note:
+        type: "string"
+        description: "Poznámka ku odbernému miestu (časy a dátumy otvorenia napríklad)"
+  Entry:
+    type: "object"
+    properties:
+      arrive:
+        type: "string"
+        description: "Čas príchodu"
+        pattern: '^\d{2}:\d{2}:\d{2}$'
+      length:
+        type: "integer"
+        description: "Dĺžka radu"
+      departure:
+        type: "string"
+        description: "Nullable, čas odchodu"
+        pattern: '^\d{2}:\d{2}:\d{2}$'
+      admin_note:
+        type: "string"
+        description: "Nullable, poznámka administrátorského hlásenia"
+      verified:
+        type: "boolean"
+        description: "Príznak, či hlásenie bolo zadané administrátorom = dôveryhodné"
+externalDocs:
+  description: "GitHub repository"
+  url: "https://github.com/psekan/somvrade"

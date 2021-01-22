@@ -8,6 +8,8 @@
         "php": "^7.3",
         "ext-json": "*",
         "ext-openssl": "*",
+        "ext-simplexml": "*",
+        "ext-curl": "*",
         "google/recaptcha": "^1.2",
         "laravel/lumen-framework": "^8.0",
         "tymon/jwt-auth": "^1.0"
